@@ -1,5 +1,5 @@
 """
-ASGI config for Travudget project.
+ASGI config for travudget project.
 
 It exposes the ASGI callable as a module-level variable named ``application``.
 
@@ -11,6 +11,6 @@ import os
 
 from django.core.asgi import get_asgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'Travudget.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'travudget.settings')
 
 application = get_asgi_application()

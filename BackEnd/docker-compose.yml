@@ -1,0 +1,25 @@
+version: '3'
+
+services:
+  api:
+    build: .
+    container_name: api
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./travudget:/app
+      - ./resources:/app/resources
+    environment:
+      DJANGO_SETTINGS_MODULE: travudget.settings
+    depends_on:
+      - db
+
+  db:
+    image: mysql:latest    
+    container_name: db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: mysql
+      MYSQL_DATABASE: mysql
+      MYSQL_USER: mysql
+      MYSQL_PASSWORD: mysql
