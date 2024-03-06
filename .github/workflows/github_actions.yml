@@ -25,7 +25,7 @@ jobs:
       run: ls -l
     
     - name: Print content
-      run: ls -l /Backend/
+      run: pwd
 
     - name: Tests usuaris
       run: python /Backend/travudget/usuaris/tests.py
