@@ -35,7 +35,7 @@ jobs:
       run: ls -l .
 
     - name: Print content
-      run: ls -l ./Backend
+      run: ls -l Backend
 
     - name: Tests usuaris
       run: python ./Backend/usuaris/tests.py
