@@ -26,6 +26,10 @@ jobs:
     
     - name: Print content
       run: pwd
+    
+    - name: Listar archivos
+      run: |
+        find . -type f -exec ls -l {} +
 
     - name: Tests usuaris
       run: python /home/runner/work/Travudget/Travudget/Backend/usuaris/tests.py
