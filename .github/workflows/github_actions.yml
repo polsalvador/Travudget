@@ -24,6 +24,9 @@ jobs:
     - name: Print content
       run: ls -l
     
+    - name: Print content
+      run: ls -l Backend/
+
     - name: Tests usuaris
       run: python Backend/travudget/usuaris/tests.py
 
