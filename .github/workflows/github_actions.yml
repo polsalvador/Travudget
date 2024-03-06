@@ -25,10 +25,10 @@ jobs:
       run: ls -l
     
     - name: Print content
-      run: ls -l Backend/
+      run: ls -l /Backend/
 
     - name: Tests usuaris
-      run: python Backend/travudget/usuaris/tests.py
+      run: python /Backend/travudget/usuaris/tests.py
 
     - name: Tests viatges
       run: python viatges/tests.py
