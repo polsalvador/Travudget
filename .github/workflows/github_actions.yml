@@ -21,8 +21,12 @@ jobs:
       with:
         python-version: '3.9'
 
+    - name: Print content
+      run: ls -l
 
-
+    - name: Print content
+      run: ls -l usuaris/
+    
     - name: Tests usuaris
       run: python usuaris/tests.py
 
