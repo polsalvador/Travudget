@@ -38,7 +38,7 @@ jobs:
       run: ls -l /home/runner/work/Travudget/Travudget
 
     - name: Tests usuaris
-      run: python ./Backend/usuaris/tests.py
+      run: python /home/runner/work/Travudget/Travudget/Backend/usuaris/tests.py
 
     - name: Tests viatges
       run: python viatges/tests.py
