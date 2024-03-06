@@ -23,12 +23,9 @@ jobs:
 
     - name: Print content
       run: ls -l
-
-    - name: Print content
-      run: ls -l usuaris/
     
     - name: Tests usuaris
-      run: python usuaris/tests.py
+      run: python Backend/travudget/usuaris/tests.py
 
     - name: Tests viatges
       run: python viatges/tests.py
