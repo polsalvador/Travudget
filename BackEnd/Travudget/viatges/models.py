@@ -1,3 +1,4 @@
 from django.db import models
 
-# Create your models here.
+class Viatge(models.Model):
+    test_integer = models.IntegerField()

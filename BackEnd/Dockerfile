@@ -13,6 +13,7 @@ RUN apt-get update && apt-get install -y \
     && pip install daphne \
     && pip install django \
     && pip install mysqlclient \
+    && pip install djangorestframework \ 
     && rm -rf /var/lib/apt/lists/*
 
 # RUN pip install --no-cache-dir -r requirements.txt
