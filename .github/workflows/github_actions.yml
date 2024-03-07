@@ -28,4 +28,4 @@ jobs:
       run: python ./BackEnd/travudget/usuaris/tests.py
 
     - name: Tests viatges
-      run: python viatges/tests.py
+      run: python ./BackEnd/travudget/viatges/tests.py
