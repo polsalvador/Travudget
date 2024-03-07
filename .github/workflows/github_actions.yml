@@ -19,20 +19,10 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
-        python-version: '3.9'
+        python-version: '3.9.11'
 
-    - name: Print content
-      run: ls -l
-    
-    - name: Print content
-      run: pwd
-    
-    - name: Listar archivos
-      run: |
-        find . -type f -exec ls -l {} +
-
-    - name: Print content
-      run: ls -l ./BackEnd/travudget
+    - name: Install requirements
+      run: pip install -r ./BackEnd/requirements.txt
     
     - name: Tests usuaris
       run: python ./BackEnd/travudget/usuaris/tests.py

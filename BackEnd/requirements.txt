@@ -25,6 +25,9 @@
 # sqlparse==0.4.4
 # urllib3==1.26.16
 # Werkzeug==2.3.4
-asgiref==3.7.2
-autobahn==20.7.1
-twisted==20.3.0
+
+# asgiref==3.7.2
+# autobahn==20.7.1
+# twisted==20.3.0
+
+Django==4.1.7
