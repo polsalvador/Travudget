@@ -32,10 +32,10 @@ jobs:
         find . -type f -exec ls -l {} +
 
     - name: Print content
-      run: ls -l ./BackEnd
+      run: ls -l ./BackEnd/travudget
     
     - name: Tests usuaris
-      run: python ./BackEnd/travudget/usuaris/tests.py.py
+      run: python ./BackEnd/travudget/usuaris/tests.py
 
     - name: Tests viatges
       run: python viatges/tests.py
