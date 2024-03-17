@@ -1,5 +1,6 @@
 package com.travudget.travudget
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.widget.Button
@@ -15,38 +16,54 @@ import androidx.appcompat.app.AppCompatActivity
 import com.travudget.travudget.databinding.ActivityMainBinding
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
-    private lateinit var binding: ActivityMainBinding
+    //private lateinit var binding: ActivityMainBinding
     private val backendManager = BackendManager()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+//        binding = ActivityMainBinding.inflate(layoutInflater)
+//        setContentView(binding.root)
 
-        setSupportActionBar(binding.appBarMain.toolbar)
-
-        val testButton: Button = findViewById(R.id.test_button)
-        println("AAAAAAAAA")
-        testButton.setOnClickListener {
-            lifecycleScope.launch {
-                backendManager.testFunction(5)
-            }
-        }
-
-        val drawerLayout: DrawerLayout = binding.drawerLayout
-        val navView: NavigationView = binding.navView
-        val navController = findNavController(R.id.nav_host_fragment_content_main)
+        //setSupportActionBar(binding.appBarMain.toolbar)
+//        val testButton: Button = findViewById(R.id.test_button)
+//        println("AAAAAAAAA")
+//        testButton.setOnClickListener {
+//            lifecycleScope.launch {
+//                backendManager.testFunction(5)
+//            }
+//        }
+//        val drawerLayout: DrawerLayout = binding.drawerLayout
+//        val navView: NavigationView = binding.navView
+//        val navController = findNavController(R.id.nav_host_fragment_content_main)
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
-        appBarConfiguration = AppBarConfiguration(setOf(
-                R.id.nav_home, R.id.nav_gallery, R.id.nav_slideshow), drawerLayout)
-        setupActionBarWithNavController(navController, appBarConfiguration)
-        navView.setupWithNavController(navController)
+//        appBarConfiguration = AppBarConfiguration(setOf(
+//                R.id.nav_home, R.id.nav_gallery, R.id.nav_slideshow), drawerLayout)
+//        setupActionBarWithNavController(navController, appBarConfiguration)
+//        navView.setupWithNavController(navController)
+
+//        setContentView(R.layout.activity_main)
+
+
+        //GoogleSignIn.getClient(this, GoogleSignInOptions.DEFAULT_SIGN_IN).signOut()
+        val account = GoogleSignIn.getLastSignedInAccount(this)
+        if (account == null) {
+            startActivity(Intent(this, IniciSessio::class.java))
+            finish()
+        } else {
+//            var googleEmail = account?.email.toString()
+//            var googleName = account?.displayName.toString()
+//            println("$googleEmail, $googleName")
+            startActivity(Intent(this, Principal::class.java))
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

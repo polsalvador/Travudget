@@ -26,8 +26,7 @@ SECRET_KEY = 'django-insecure-e$!0xt56c^(+)^kjm4_j_5e)gl&gy1_z)!ge^*wukxrwbtxf#+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 
@@ -77,17 +76,13 @@ ASGI_APPLICATION = 'travudget.asgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
-#Per fer funcionar en local
-# db_host = os.environ.get('DB_HOST', 'localhost')
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'mysql',
         'USER': 'mysql',
         'PASSWORD': 'mysql',
-        #'HOST': db_host, 
-        'HOST': 'db', 
+        'HOST': 'db', #db
         'PORT': '3306',
     }
 }

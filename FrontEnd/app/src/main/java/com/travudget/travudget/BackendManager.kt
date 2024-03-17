@@ -7,27 +7,27 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.IOException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.json.JSONObject
 
 class BackendManager {
-    private val backendUrl = "http://127.0.0.1:8000"
+    private val backendUrl = "http://192.168.1.59:8000"
     private val jsonMediaType = "application/json".toMediaType()
     private val client = OkHttpClient()
 
-    suspend fun testFunction(number: Int) {
+    suspend fun sendLogin(name: String, email: String) {
         try {
-            val requestBody = "{\"number\": $number}".toRequestBody(jsonMediaType)
-            println("Funciono")
+            val requestBody = "{\"name\": \"$name\", \"email\": \"$email\"}".toRequestBody(jsonMediaType)
+            val url = "$backendUrl/usuaris"
             val request = Request.Builder()
-                .url("http://127.0.0.1:8000")
+                .url(url)
                 .post(requestBody)
                 .build()
-            println(request)
             withContext(Dispatchers.IO) {
                 val response = client.newCall(request).execute()
                 if (response.isSuccessful) {
-                    println("OK")
+                    println("Login: OK")
                 } else {
-                    println("Failed: ${response.code}")
+                    println("Login: Failed ${response.code}")
                 }
             }
         } catch (e: IOException) {

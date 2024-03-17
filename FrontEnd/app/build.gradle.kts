@@ -1,6 +1,7 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -16,9 +17,16 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
-
+    signingConfigs {
+        create("release")    {
+            storeFile = file("my_key.jks")
+            storePassword = "123456"
+            keyAlias = "alias"
+        }
+    }
     buildTypes {
-        release {
+        getByName("release") {
+            signingConfig = signingConfigs.getByName("release")
             isMinifyEnabled = false
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
@@ -50,4 +58,8 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
 
     implementation("com.squareup.okhttp3:okhttp:4.9.3")
+    implementation ("com.google.android.gms:play-services-auth:19.2.0")
+
+    implementation(platform("com.google.firebase:firebase-bom:32.7.4"))
+    implementation("com.google.firebase:firebase-analytics")
 }
