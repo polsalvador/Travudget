@@ -3,8 +3,7 @@ name: Continuous integration of the project.
 on:
   push:
     branches:
-      - 'feature/*'
-      - development
+      - '*'
 
 jobs:
   build:
