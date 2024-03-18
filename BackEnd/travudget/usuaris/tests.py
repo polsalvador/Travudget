@@ -7,8 +7,8 @@ settings.configure()
 from django.test import TestCase
 from rest_framework import status
 from rest_framework.test import APIRequestFactory
-from views import sign_up
-from models import Usuari
+from usuaris.views import sign_up
+from usuaris.models import Usuari
 
 class SignUpTestCase(TestCase):
 
