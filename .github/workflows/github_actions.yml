@@ -26,8 +26,8 @@ jobs:
     - name: Tests usuaris
       run: |
         ls -la ./BackEnd/travudget/usuaris
-        cd ./BackEnd/travudget/usuaris/
-        python tests.py
+        cd ./BackEnd/travudget
+        python ./usuaris/tests.py
 
     - name: Tests viatges
       run: python ./BackEnd/travudget/viatges/tests.py
