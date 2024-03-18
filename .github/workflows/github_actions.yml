@@ -25,9 +25,8 @@ jobs:
     
     - name: Tests usuaris
       run: |
-        cd ./BackEnd/travudget
-        export DJANGO_SETTINGS_MODULE=travudget.settings
-        python ./usuaris/tests.py
+        cd ./BackEnd/travudget/usuaris/
+        python tests.py
 
     - name: Tests viatges
       run: python ./BackEnd/travudget/viatges/tests.py
