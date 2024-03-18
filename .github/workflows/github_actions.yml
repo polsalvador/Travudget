@@ -23,6 +23,9 @@ jobs:
     - name: Install requirements
       run: pip install -r ./BackEnd/requirements.txt
     
+    - name: Set DJANGO_SETTINGS_MODULE
+      run: echo "DJANGO_SETTINGS_MODULE=travudget.settings" >> $GITHUB_ENV
+      
     - name: Tests usuaris
       run: |
         cd ./BackEnd/travudget
