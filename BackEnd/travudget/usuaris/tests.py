@@ -1,8 +1,8 @@
 import os
 from django.conf import settings
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'travudget.settings')
-settings.configure()
+# os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'travudget.settings')
+# settings.configure()
 
 from django.test import TestCase
 from rest_framework import status
