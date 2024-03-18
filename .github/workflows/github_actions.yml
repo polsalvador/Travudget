@@ -24,7 +24,7 @@ jobs:
       run: pip install -r ./BackEnd/requirements.txt
     
     - name: Tests usuaris
-      run: DJANGO_SETTINGS_MODULE=Backend.travudget.settings python ./BackEnd/travudget/usuaris/tests.py
+      run: DJANGO_SETTINGS_MODULE=travudget.settings python ./BackEnd/travudget/usuaris/tests.py
 
     - name: Tests viatges
       run: python ./BackEnd/travudget/viatges/tests.py
