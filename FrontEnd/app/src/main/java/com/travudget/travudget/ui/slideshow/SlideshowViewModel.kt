@@ -1,4 +1,4 @@
-package com.example.travudget.ui.slideshow
+package com.travudget.travudget.ui.slideshow
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
