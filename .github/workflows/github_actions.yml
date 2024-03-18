@@ -24,7 +24,9 @@ jobs:
       run: pip install -r ./BackEnd/requirements.txt
     
     - name: Tests usuaris
-      run: PYTHONPATH=./BackEnd/travudget:$PYTHONPATH python ./BackEnd/travudget/usuaris/tests.py
+      run: |
+        cd ./BackEnd/travudget
+        python -m usuaris.tests
 
     - name: Tests viatges
       run: python ./BackEnd/travudget/viatges/tests.py
