@@ -32,4 +32,6 @@ jobs:
         python -m usuaris.tests
 
     - name: Tests viatges
-      run: python ./BackEnd/travudget/viatges/tests.py
+      run: |
+        cd ./BackEnd/travudget
+        python -m viatges.tests
