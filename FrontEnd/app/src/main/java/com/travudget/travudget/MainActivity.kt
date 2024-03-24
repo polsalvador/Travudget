@@ -3,71 +3,40 @@ package com.travudget.travudget
 import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
-import android.widget.Button
-import com.google.android.material.snackbar.Snackbar
-import com.google.android.material.navigation.NavigationView
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
-import androidx.navigation.ui.setupActionBarWithNavController
-import androidx.navigation.ui.setupWithNavController
-import androidx.drawerlayout.widget.DrawerLayout
 import androidx.appcompat.app.AppCompatActivity
-import com.travudget.travudget.databinding.ActivityMainBinding
-import androidx.lifecycle.lifecycleScope
-import kotlinx.coroutines.launch
 import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
-
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import android.content.Context
 
 class MainActivity : AppCompatActivity() {
-
     private lateinit var appBarConfiguration: AppBarConfiguration
-    //private lateinit var binding: ActivityMainBinding
     private val backendManager = BackendManager()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-//        binding = ActivityMainBinding.inflate(layoutInflater)
-//        setContentView(binding.root)
+        GlobalScope.launch {
+            val response = backendManager.getCurrencies()
+            val sharedPreferences = getSharedPreferences("myPrefs", Context.MODE_PRIVATE)
+            val editor = sharedPreferences.edit()
+            editor.putString("currencies", response)
+            editor.apply()
+        }
 
-        //setSupportActionBar(binding.appBarMain.toolbar)
-//        val testButton: Button = findViewById(R.id.test_button)
-//        println("AAAAAAAAA")
-//        testButton.setOnClickListener {
-//            lifecycleScope.launch {
-//                backendManager.testFunction(5)
-//            }
-//        }
-//        val drawerLayout: DrawerLayout = binding.drawerLayout
-//        val navView: NavigationView = binding.navView
-//        val navController = findNavController(R.id.nav_host_fragment_content_main)
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
-//        appBarConfiguration = AppBarConfiguration(setOf(
-//                R.id.nav_home, R.id.nav_gallery, R.id.nav_slideshow), drawerLayout)
-//        setupActionBarWithNavController(navController, appBarConfiguration)
-//        navView.setupWithNavController(navController)
-
-//        setContentView(R.layout.activity_main)
-
-
-        //GoogleSignIn.getClient(this, GoogleSignInOptions.DEFAULT_SIGN_IN).signOut()
         val account = GoogleSignIn.getLastSignedInAccount(this)
         if (account == null) {
             startActivity(Intent(this, IniciSessio::class.java))
             finish()
         } else {
-//            var googleEmail = account?.email.toString()
-//            var googleName = account?.displayName.toString()
-//            println("$googleEmail, $googleName")
             startActivity(Intent(this, Principal::class.java))
         }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.main, menu)
         return true
     }

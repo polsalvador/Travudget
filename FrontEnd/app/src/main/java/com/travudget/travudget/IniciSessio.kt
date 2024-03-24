@@ -11,6 +11,7 @@ import com.google.android.gms.common.api.ApiException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import android.content.Context
 
 class IniciSessio : AppCompatActivity() {
     private val backendManager = BackendManager()
@@ -43,8 +44,15 @@ class IniciSessio : AppCompatActivity() {
                 val account = GoogleSignIn.getSignedInAccountFromIntent(data).getResult(ApiException::class.java)
                 val googleEmail = account?.email.toString()
                 val googleName = account?.displayName.toString()
+
+                val sharedPreferences = getSharedPreferences("myPrefs", Context.MODE_PRIVATE)
+                val editor = sharedPreferences.edit()
+                editor.putString("googleEmail", googleEmail)
+                editor.putString("googleName", googleName)
+                editor.apply()
+
                 CoroutineScope(Dispatchers.IO).launch {
-                    backendManager.sendLogin(googleEmail, googleName)
+                    backendManager.sendLogin(googleName, googleEmail)
                     startActivity(Intent(this@IniciSessio, Principal::class.java))
                     finish()
                 }
