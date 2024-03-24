@@ -4,7 +4,7 @@ from rest_framework.test import APIRequestFactory
 from .views import sign_up
 from .models import Usuari
 
-class SignUpTestCase(TestCase):
+class UsuariTestCase(TestCase):
 
     def setUp(self):
         self.factory = APIRequestFactory()

@@ -62,4 +62,6 @@ dependencies {
 
     implementation(platform("com.google.firebase:firebase-bom:32.7.4"))
     implementation("com.google.firebase:firebase-analytics")
+
+    implementation ("com.github.kittinunf.fuel:fuel:2.3.1")
 }

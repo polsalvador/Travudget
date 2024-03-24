@@ -11,4 +11,4 @@ class Viatge(models.Model):
     deutes = models.JSONField(default=list)
     codi = models.CharField(max_length=255, unique=True)
     creador = models.ForeignKey(Usuari, related_name='viatges_creats', on_delete=models.CASCADE)
-    participants = models.ManyToManyField(Usuari, related_name='viajes_on_participa')
+    participants = models.ManyToManyField(Usuari, related_name='viajes_on_participa', blank=True)

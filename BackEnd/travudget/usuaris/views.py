@@ -15,6 +15,6 @@ def sign_up(request):
         usuari = Usuari.objects.get(email=email)
         return Response(status=status.HTTP_200_OK)
     except Usuari.DoesNotExist:
-        usuari = Usuari(email=email, nom_usuari=name)
+        usuari = Usuari(email=email, nom_usuari=name, username=name)
         usuari.save()
         return Response(status=status.HTTP_201_CREATED)

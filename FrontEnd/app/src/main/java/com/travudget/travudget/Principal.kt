@@ -10,11 +10,17 @@ import androidx.core.view.GravityCompat
 import androidx.appcompat.app.AlertDialog
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
-import android.text.Spannable
-import android.text.SpannableString
-import android.text.style.ForegroundColorSpan
-import android.graphics.Color
+import android.content.Context
 import android.text.Html
+import android.widget.LinearLayout
+import android.widget.FrameLayout
+import android.widget.TextView
+import androidx.cardview.widget.CardView
+import android.graphics.Color
+import android.view.LayoutInflater
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class Principal : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -24,25 +30,35 @@ class Principal : AppCompatActivity() {
         val btnMenu = findViewById<ImageButton>(R.id.btn_menu)
         val drawerLayout = findViewById<DrawerLayout>(R.id.drawer_layout)
         val navView = findViewById<NavigationView>(R.id.nav_view)
+        val contentFrame = findViewById<FrameLayout>(R.id.content_frame)
 
         btnMenu.setOnClickListener {
             drawerLayout.openDrawer(GravityCompat.START)
+        }
+
+        val createViatge = findViewById<ImageButton>(R.id.btn_add_viatge)
+        createViatge.setOnClickListener {
+            startActivity(Intent(this, CrearViatge::class.java))
+            finish()
         }
 
         navView.setNavigationItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.nav_viatges -> {
                     drawerLayout.closeDrawer(GravityCompat.START)
-                    true // Indica que el item ha sido manejado
+                    true
                 }
                 R.id.nav_logout -> {
-                    // Crea un diálogo de confirmación
                     AlertDialog.Builder(this)
                         .setTitle("Estàs segur de que vols tancar sessió?")
                         .setPositiveButton(
                             Html.fromHtml("<font color=\"#FFFF00\">Si</font>")
                         ) { _, _ ->
                             GoogleSignIn.getClient(this, GoogleSignInOptions.DEFAULT_SIGN_IN).signOut()
+                            val sharedPreferences = getSharedPreferences("myPrefs", Context.MODE_PRIVATE)
+                            val editor = sharedPreferences.edit()
+                            editor.clear()
+                            editor.apply()
                             startActivity(Intent(this, IniciSessio::class.java))
                             finish()
                         }
@@ -52,18 +68,58 @@ class Principal : AppCompatActivity() {
                         .show()
 
                     drawerLayout.closeDrawer(GravityCompat.START)
-                    true // Indica que el item ha sido manejado
+                    true
                 }
-                // Agrega más casos para otros items del menú si es necesario
-                else -> false // Indica que el item no ha sido manejado
+                else -> false
+            }
+        }
+
+        showViatges(contentFrame)
+    }
+
+    private fun showViatges(contentFrame: FrameLayout) {
+        CoroutineScope(Dispatchers.IO).launch {
+            val sharedPreferences = getSharedPreferences("myPrefs", Context.MODE_PRIVATE)
+            val googleEmail = sharedPreferences.getString("googleEmail", "")
+            val viatges: List<Pair<Int, String>> = BackendManager().getViatges(googleEmail)
+            println("VIATGES: $viatges")
+
+            val linearLayout = LinearLayout(contentFrame.context)
+            linearLayout.orientation = LinearLayout.VERTICAL
+
+            runOnUiThread {
+                for (viatge in viatges) {
+                    val cardView = createCardViewForViatge(viatge)
+
+                    cardView.setOnClickListener {
+                        val intent = Intent(this@Principal, Viatge::class.java).apply {
+                            putExtra("viatgeId", viatge.first)
+                        }
+                        startActivity(intent)
+                    }
+
+                    val layoutParams = LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                    )
+                    layoutParams.bottomMargin = 20
+                    cardView.layoutParams = layoutParams
+                    linearLayout.addView(cardView)
+                }
+                contentFrame.addView(linearLayout)
             }
         }
     }
 
-    private fun changeToRed(text: String, color: Int): SpannableString {
-        val spannableString = SpannableString(text)
 
-        return spannableString
+    private fun createCardViewForViatge(viatgePair: Pair<Int, String>): CardView {
+        val inflater = LayoutInflater.from(this)
+        val cardView = inflater.inflate(R.layout.cards_viatges, null) as CardView
+
+        val textView = cardView.findViewById<TextView>(R.id.textView)
+        textView.text = viatgePair.second
+        textView.setTextColor(Color.BLACK)
+
+        return cardView
     }
-
 }

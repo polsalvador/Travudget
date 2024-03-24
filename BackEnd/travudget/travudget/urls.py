@@ -1,10 +1,9 @@
-from django.contrib import admin
 from django.urls import path
-#from viatges.views import create_trip, ping
 from usuaris.views import sign_up
+from viatges.views import create_or_get_viatge, get_viatge
 
 urlpatterns = [
-    # path('viatges', create_trip, name='create_trip'),
-    # path('viatges/ping', ping),
-    path('usuaris', sign_up)
+    path('usuaris', sign_up),
+    path('usuaris/<str:email>/viatges', create_or_get_viatge, name='create_or_get_viatge'),
+    path('usuaris/<str:email>/viatges/<str:id>', get_viatge, name='get_viatge'),
 ]
