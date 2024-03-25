@@ -1,16 +1,18 @@
 package com.travudget.travudget
 
 import java.util.Date
+import java.io.Serializable
 
 data class ViatgeInfo(
-    val nomViatge: String,
-    val dataInici: Date,
-    val dataFi: Date?,
-    val divisa: String,
-    val pressupostTotal: Int,
-    val pressupostVariable: List<Any>,
-    val deutes: List<Any>,
-    val codi: String,
-    val creadorId: Int,
-    val participantsIds: List<Any>
-)
+    var viatgeId: String,
+    var nomViatge: String,
+    var dataInici: Date?,
+    var dataFi: Date?,
+    var divisa: String,
+    var pressupostTotal: Int,
+    var pressupostVariable: MutableMap<String, Int>,
+    var deutes: List<Any>,
+    var codi: String,
+    var creadorId: Int,
+    var participantsIds: List<Any>
+) : Serializable

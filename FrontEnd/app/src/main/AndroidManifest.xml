@@ -41,5 +41,8 @@
         <activity
             android:name=".Viatge">
         </activity>
+        <activity
+            android:name=".ViatgeEditar">
+        </activity>
     </application>
 </manifest>

@@ -77,6 +77,8 @@ class CrearViatge : AppCompatActivity() {
                     Toast.makeText(this, "La data de finalització ha de ser posterior a la data d'inici", Toast.LENGTH_SHORT).show()
                 } else {
                     CoroutineScope(Dispatchers.IO).launch {
+                        selectedDivisa = selectedDivisa ?: "EUR"
+
                         val viatgeId = backendManager.createViatge(
                             googleEmail,
                             nomViatge,

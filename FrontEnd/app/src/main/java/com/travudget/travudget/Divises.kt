@@ -20,7 +20,6 @@ class Divises : AppCompatActivity() {
     private lateinit var searchView: androidx.appcompat.widget.SearchView
     private lateinit var txtRetornar: TextView
 
-    private var selectedDivisa: String? = null
     private lateinit var adapter: ListAdapter<Pair<String, String>, DivisesViewHolder>
     private var divisesList: List<Pair<String, String>> = listOf()
 
@@ -116,4 +115,5 @@ class Divises : AppCompatActivity() {
             return oldItem == newItem
         }
     }
+
 }

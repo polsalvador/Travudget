@@ -2,8 +2,13 @@ package com.travudget.travudget
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
+import android.widget.PopupMenu
 import android.os.Bundle
 import android.text.Html
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.style.ForegroundColorSpan
 import android.view.View
 import android.widget.ImageButton
 import android.widget.TextView
@@ -26,12 +31,17 @@ class Viatge : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.viatge)
 
+        val btnOptions = findViewById<ImageButton>(R.id.btn_options)
         val btnReturn = findViewById<ImageButton>(R.id.btn_return)
         val navView = findViewById<NavigationView>(R.id.nav_view)
 
         btnReturn.setOnClickListener {
             startActivity(Intent(this, Principal::class.java))
             finish()
+        }
+
+        btnOptions.setOnClickListener {
+            showPopupMenu(btnOptions)
         }
         
         navView.setNavigationItemSelectedListener { menuItem ->
@@ -68,7 +78,7 @@ class Viatge : AppCompatActivity() {
         val drawerLayout = findViewById<DrawerLayout>(R.id.drawer_layout_viatge)
         drawerLayout.visibility = View.INVISIBLE
 
-        val viatgeId = intent.getIntExtra("viatgeId", 0)
+        val viatgeId = intent.getStringExtra("viatgeId")
 
         CoroutineScope(Dispatchers.IO).launch {
             val sharedPreferences = getSharedPreferences("myPrefs", Context.MODE_PRIVATE)
@@ -82,5 +92,41 @@ class Viatge : AppCompatActivity() {
                 drawerLayout.visibility = View.VISIBLE
             }
         }
+    }
+
+    private fun showPopupMenu(view: View) {
+        val popupMenu = PopupMenu(this, view)
+        popupMenu.inflate(R.menu.options_menu)
+
+        val deleteMenuItem = popupMenu.menu.findItem(R.id.menu_delete)
+
+        val spannableString = SpannableString(deleteMenuItem.title)
+        spannableString.setSpan(ForegroundColorSpan(Color.RED), 0, spannableString.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+
+        deleteMenuItem.title = spannableString
+
+        popupMenu.setOnMenuItemClickListener { item ->
+            when (item.itemId) {
+                R.id.menu_edit -> {
+                    val intent = Intent(this, ViatgeEditar::class.java).apply {
+                        putExtra("viatgeInfo", viatgeInfo)
+                    }
+                    startActivity(intent)
+                    finish()
+                    true
+                }
+                R.id.menu_informe -> {
+                    //
+                    true
+                }
+                R.id.menu_delete -> {
+                    //
+                    true
+                }
+                else -> false
+            }
+        }
+
+        popupMenu.show()
     }
 }
