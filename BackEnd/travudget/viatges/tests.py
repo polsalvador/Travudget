@@ -1,7 +1,7 @@
 from django.test import TestCase
 from rest_framework import status
 from rest_framework.test import APIRequestFactory
-from .views import create_or_get_viatge, get_or_edit_viatge
+from .views import create_or_get_viatge, get_or_edit_or_delete_viatge
 from .models import Viatge
 from usuaris.models import Usuari
 
@@ -110,7 +110,7 @@ class ViatgeTestCase(TestCase):
 
         request = self.factory.get(f'/usuaris/{email}/viatges/{viatge.id}')
 
-        response = get_or_edit_viatge(request, email, viatge.id)
+        response = get_or_edit_or_delete_viatge(request, email, viatge.id)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['nomViatge'], "Viatge de prova")
@@ -120,7 +120,7 @@ class ViatgeTestCase(TestCase):
 
         request = self.factory.get(f'/usuaris/{email}/viatges/1')
 
-        response = get_or_edit_viatge(request, email, 1)
+        response = get_or_edit_or_delete_viatge(request, email, 1)
 
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
         self.assertEqual(response.data['message'], "L'usuari no existeix")
@@ -132,7 +132,7 @@ class ViatgeTestCase(TestCase):
 
         request = self.factory.get(f'/usuaris/{email}/viatges/999')
 
-        response = get_or_edit_viatge(request, email, 999)
+        response = get_or_edit_or_delete_viatge(request, email, 999)
 
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
         self.assertEqual(response.data['message'], "El viatge no existeix o no pertany a l'usuari")
@@ -160,7 +160,7 @@ class ViatgeTestCase(TestCase):
             'divisa': "USD"
         })
 
-        response = get_or_edit_viatge(request, email, viatge.id)
+        response = get_or_edit_or_delete_viatge(request, email, viatge.id)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertTrue(Viatge.objects.filter(nomViatge=nom_viatge_nou).exists())
@@ -176,7 +176,7 @@ class ViatgeTestCase(TestCase):
             'divisa': "USD"
         })
 
-        response = get_or_edit_viatge(request, email, 1)
+        response = get_or_edit_or_delete_viatge(request, email, 1)
 
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
@@ -193,7 +193,7 @@ class ViatgeTestCase(TestCase):
             'divisa': "USD"
         })
 
-        response = get_or_edit_viatge(request, email, 999)
+        response = get_or_edit_or_delete_viatge(request, email, 999)
 
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
     
@@ -224,9 +224,27 @@ class ViatgeTestCase(TestCase):
             }   
         }, format='json')
 
-        response = get_or_edit_viatge(request, email, viatge.id)
+        response = get_or_edit_or_delete_viatge(request, email, viatge.id)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertTrue(Viatge.objects.filter(nomViatge=nom_viatge_nou).exists())
         viatge_actualizado = Viatge.objects.get(pk=viatge.id)
         self.assertEqual(viatge_actualizado.pressupostVariable["2024-06-23"], 100)
+    
+    def test_delete_viatge(self):
+        email = "polsalvador@gmail.com"
+        usuari = Usuari.objects.create(email=email)
+        viatge = Viatge.objects.create(
+            nomViatge="Test Viatge",
+            dataInici="2023-01-01",
+            dataFi="2023-01-05",
+            divisa="EUR",
+            creador=usuari,
+            codi="ABCDE",
+            pressupostTotal=500
+        )
+        request = self.factory.delete(f'/usuaris/{email}/viatges/{viatge.id}')
+        response = get_or_edit_or_delete_viatge(request, email, viatge.id)
+
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertFalse(Viatge.objects.filter(id=viatge.id).exists())

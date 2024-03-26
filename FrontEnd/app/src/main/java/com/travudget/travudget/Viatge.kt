@@ -120,7 +120,22 @@ class Viatge : AppCompatActivity() {
                     true
                 }
                 R.id.menu_delete -> {
-                    //
+                    AlertDialog.Builder(this)
+                        .setTitle("Estàs segur de que vols eliminar el viatge?")
+                        .setPositiveButton("Sí") { _, _ ->
+                            CoroutineScope(Dispatchers.IO).launch {
+                                val sharedPreferences =
+                                    getSharedPreferences("myPrefs", Context.MODE_PRIVATE)
+                                val googleEmail = sharedPreferences.getString("googleEmail", "")
+                                backendManager.deleteViatge(googleEmail, viatgeInfo.viatgeId)
+                            }
+                            startActivity(Intent(this@Viatge, Principal::class.java))
+                            finish()
+                        }
+                        .setNegativeButton("No") { dialog, _ ->
+                            dialog.dismiss()
+                        }
+                        .show()
                     true
                 }
                 else -> false

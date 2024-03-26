@@ -187,25 +187,38 @@ class BackendManager {
             val sdfFiStr = sdfOutput.format(viatgeInfo.dataFi)
 
             val requestBody = "{\"nomViatge\": \"${viatgeInfo.nomViatge}\", \"dataInici\": \"${sdfIniciStr}\", \"dataFi\": \"${sdfFiStr}\", \"divisa\": \"${viatgeInfo.divisa}\", \"pressupostTotal\": \"${viatgeInfo.pressupostTotal}\", \"pressupostVariable\": \"${viatgeInfo.pressupostVariable}\"}".toRequestBody(jsonMediaType)
-            val buffer = Buffer()
-            requestBody.writeTo(buffer)
-            val requestBodyString = buffer.readUtf8()
-            println("RequestBody: $requestBodyString")
             val url = "$backendUrl/usuaris/$email/viatges/$viatgeId"
             val request = Request.Builder()
                 .url(url)
                 .put(requestBody)
                 .build()
-            print(request)
-            print("viatgeId: $viatgeId")
-            print("requestBody: $requestBody")
+
             withContext(Dispatchers.IO) {
                 val response = client.newCall(request).execute()
-                print(response)
                 if (response.isSuccessful) {
                     println("editViatge: OK")
                 } else {
                     println("editViatge: Failed ${response.code}")
+                }
+            }
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+    }
+
+    suspend fun deleteViatge(email: String?, viatgeId: String?) {
+        try {
+            val url = "$backendUrl/usuaris/$email/viatges/$viatgeId"
+            val request = Request.Builder()
+                .url(url)
+                .delete()
+                .build()
+            withContext(Dispatchers.IO) {
+                val response = client.newCall(request).execute()
+                if (response.isSuccessful) {
+                    println("deleteViatge: OK")
+                } else {
+                    println("deleteViatge: Failed ${response.code}")
                 }
             }
         } catch (e: IOException) {

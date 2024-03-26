@@ -53,8 +53,8 @@ def create_or_get_viatge(request, email):
         except Usuari.DoesNotExist:
             return Response({"message": "L'usuari no existeix"}, status=status.HTTP_404_NOT_FOUND)
 
-@api_view(['GET',  'PUT'])
-def get_or_edit_viatge(request, email, id):
+@api_view(['GET',  'PUT', 'DELETE'])
+def get_or_edit_or_delete_viatge(request, email, id):
     if request.method == 'GET':
         try:
             usuari = Usuari.objects.get(email=email)
@@ -73,12 +73,21 @@ def get_or_edit_viatge(request, email, id):
             return Response({"message": "L'usuari no existeix"}, status=status.HTTP_404_NOT_FOUND)
         except Viatge.DoesNotExist:
             return Response({"message": "El viatge no existeix o no pertany a l'usuari"}, status=status.HTTP_404_NOT_FOUND)
-        print("REQUEST: ", request)
+
         serializer = ViatgeSerializer(viatge, data=request.data, partial=True)
-        print("SERIALIZER: ", serializer)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
         else:
             print(serializer)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    elif request.method == 'DELETE':
+        try:
+            usuari = Usuari.objects.get(email=email)
+            viatge = Viatge.objects.get(id=int(id), creador_id=usuari.id)
+        except Usuari.DoesNotExist:
+            return Response({"message": "L'usuari no existeix"}, status=status.HTTP_404_NOT_FOUND)
+        except Viatge.DoesNotExist:
+            return Response({"message": "El viatge no existeix o no pertany a l'usuari"}, status=status.HTTP_404_NOT_FOUND)
+        viatge.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
