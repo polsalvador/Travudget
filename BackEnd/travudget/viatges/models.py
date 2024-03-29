@@ -3,7 +3,7 @@ from usuaris.models import Usuari
 
 class Viatge(models.Model):
     nomViatge = models.CharField(max_length=255)
-    dataInici = models.DateField()
+    dataInici = models.DateField(null=True, blank=True)
     dataFi = models.DateField(null=True, blank=True)
     divisa = models.CharField(max_length=255)
     pressupostTotal = models.IntegerField()

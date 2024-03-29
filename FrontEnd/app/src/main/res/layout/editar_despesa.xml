@@ -1,0 +1,314 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:id="@+id/layoutBarraSuperior"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:layout_alignParentTop="true"
+        android:background="?attr/colorPrimary"
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/txtCancelar"
+            android:layout_gravity="center"
+            android:textColor="@android:color/white"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:textSize="20sp"
+            android:text="Cancelar"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:clickable="true" />
+
+        <TextView
+            android:id="@+id/txtGuardar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Guardar"
+            android:textStyle="bold"
+            android:textSize="20sp"
+            android:textColor="@android:color/black"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:clickable="true" />
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/layoutNom"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_below="@id/layoutBarraSuperior"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:gravity="end"
+        android:background="@drawable/border">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Nom"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_marginEnd="8dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="*"
+            android:textColor="#FF0000"
+            android:textSize="16sp" />
+
+        <EditText
+            android:id="@+id/editTextNom"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:hint="Nom del viatge" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/layoutPreu"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_below="@id/layoutNom"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:gravity="end"
+        android:background="@drawable/border">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Preu"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_marginEnd="8dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="*"
+            android:textColor="#FF0000"
+            android:textSize="16sp" />
+
+        <EditText
+            android:id="@+id/editTextPreu"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:inputType="number"
+            android:hint="Quantitat" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/creardespesa_text_1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Categoria"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:layout_marginTop="8dp"
+        android:layout_marginLeft="20dp"
+        android:layout_below="@id/layoutPreu"/>
+
+    <LinearLayout
+        android:id="@+id/layoutCategoria"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_below="@id/layoutDataInici"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:gravity="end"
+        android:background="@drawable/border">
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/layoutDescripcio"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_below="@id/creardespesa_text_1"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:gravity="end"
+        android:background="@drawable/border">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Descripció"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_marginEnd="8dp" />
+
+        <EditText
+            android:id="@+id/editTextDescripcio"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:hint="Descripció" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/layoutDataInici"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_below="@id/layoutDescripcio"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:gravity="end"
+        android:background="@drawable/border">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Data d'inici"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_marginEnd="8dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="*"
+            android:textColor="#FF0000"
+            android:textSize="16sp" />
+
+        <EditText
+            android:id="@+id/editTextDataInici"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:focusable="false"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/layoutDataFi"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_below="@id/layoutDataInici"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:gravity="end"
+        android:background="@drawable/border">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Data de fi"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_marginEnd="8dp" />
+
+        <EditText
+            android:id="@+id/editTextDataFi"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:focusable="false"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/layoutUbicacio"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_below="@id/layoutDataFi"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:gravity="end"
+        android:background="@drawable/border">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Ubicació"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_marginEnd="8dp" />
+
+        <Button
+            android:id="@+id/buttonUbicacio"
+            android:layout_width="0dp"
+            android:gravity="start"
+            android:layout_height="40dp"
+            android:layout_weight="1"
+            android:text="Tria al mapa"
+            android:textColor="#555555"
+            android:background="#00000000"
+            android:textAllCaps="false" />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/crearviatge_text_1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Els camps amb "
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:layout_marginTop="8dp"
+        android:layout_marginLeft="20dp"
+        android:layout_below="@id/layoutUbicacio"/>
+
+    <TextView
+        android:id="@+id/crearviatge_text_2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=" * "
+        android:textSize="16sp"
+        android:textColor="#FF0000"
+        android:textStyle="bold"
+        android:layout_marginTop="8dp"
+        android:layout_below="@id/layoutUbicacio"
+        android:layout_toEndOf="@id/crearviatge_text_1" />
+
+    <TextView
+        android:id="@+id/crearviatge_text_3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=" són obligatoris."
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:layout_marginTop="8dp"
+        android:layout_below="@id/layoutUbicacio"
+        android:layout_toEndOf="@id/crearviatge_text_2" />
+
+</RelativeLayout>

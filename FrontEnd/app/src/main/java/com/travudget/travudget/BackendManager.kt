@@ -110,8 +110,8 @@ class BackendManager {
         }
         return list
     }
-    suspend fun getViatges(email: String?): List<Pair<Int, String>> {
-        var viatgesList = emptyList<Pair<Int, String>>()
+    suspend fun getViatges(email: String?): List<ViatgeShowInfo> {
+        var viatgesList = emptyList<ViatgeShowInfo>()
         try {
             val url = "$backendUrl/usuaris/$email/viatges"
             val request = Request.Builder()
@@ -127,12 +127,13 @@ class BackendManager {
                     val responseBody = response.body?.string()
                     responseBody?.let { json ->
                         val jsonArray = JSONArray(json)
-                        viatgesList = mutableListOf<Pair<Int, String>>()
+                        viatgesList = mutableListOf()
                         for (i in 0 until jsonArray.length()) {
                             val jsonObject = jsonArray.getJSONObject(i)
-                            val id = jsonObject.getInt("id")
+                            val id = jsonObject.getInt("id").toString()
                             val nomViatge = jsonObject.getString("nomViatge")
-                            (viatgesList as MutableList<Pair<Int, String>>).add(Pair(id, nomViatge))
+                            email?.let { ViatgeShowInfo(id, nomViatge, it) }
+                                ?.let { (viatgesList as MutableList<ViatgeShowInfo>).add(it) }
                         }
                         println("viatgesList: $viatgesList")
                     }
@@ -276,5 +277,172 @@ class BackendManager {
                     }
                 }
         }
+    }
+
+    suspend fun createDespesa(despesaInfo: DespesaInfo) {
+        try {
+            val emailCreador = despesaInfo.emailCreador
+            val requestBody = "{\"nomDespesa\": \"${despesaInfo.nomDespesa}\", \"creador\": \"${emailCreador}\", \"descripcio\": \"${despesaInfo.descripcio}\", \"preu\": \"${despesaInfo.preu}\", \"categoria\": \"${despesaInfo.categoria}\", \"dataInici\": \"${despesaInfo.dataInici}\", \"dataFi\": \"${despesaInfo.dataFi}\", \"ubicacio_lat\": \"${despesaInfo.ubicacio_lat}\", \"ubicacio_long\": \"${despesaInfo.ubicacio_long}\", \"deutors\": \"${despesaInfo.deutors}\"}".toRequestBody(jsonMediaType)
+            val idViatge = despesaInfo.viatgeId
+            val url = "$backendUrl/usuaris/$emailCreador/viatges/$idViatge/despeses"
+            val request = Request.Builder()
+                .url(url)
+                .post(requestBody)
+                .build()
+            print(request)
+            withContext(Dispatchers.IO) {
+                val response = client.newCall(request).execute()
+                print(response)
+                if (response.isSuccessful) {
+                    println("createDespesa: OK")
+                } else {
+                    println("createDespesa: Failed ${response.code}")
+                }
+            }
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+    }
+
+    suspend fun editDespesa(despesaInfo: DespesaInfo, despesaId: String) {
+        try {
+            val emailCreador = despesaInfo.emailCreador
+            val requestBody = "{\"nomDespesa\": \"${despesaInfo.nomDespesa}\", \"creador\": \"${emailCreador}\", \"descripcio\": \"${despesaInfo.descripcio}\", \"preu\": \"${despesaInfo.preu}\", \"categoria\": \"${despesaInfo.categoria}\", \"dataInici\": \"${despesaInfo.dataInici}\", \"dataFi\": \"${despesaInfo.dataFi}\", \"ubicacio_lat\": \"${despesaInfo.ubicacio_lat}\", \"ubicacio_long\": \"${despesaInfo.ubicacio_long}\", \"deutors\": \"${despesaInfo.deutors}\"}".toRequestBody(jsonMediaType)
+            val idViatge = despesaInfo.viatgeId
+            val url = "$backendUrl/usuaris/$emailCreador/viatges/$idViatge/despeses/$despesaId"
+            val request = Request.Builder()
+                .url(url)
+                .post(requestBody)
+                .build()
+            print(request)
+            withContext(Dispatchers.IO) {
+                val response = client.newCall(request).execute()
+                print(response)
+                if (response.isSuccessful) {
+                    println("editDespesa: OK")
+                } else {
+                    println("editDespesa: Failed ${response.code}")
+                }
+            }
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+    }
+
+    suspend fun deleteDespesa(despesaInfo: DespesaInfo, despesaId: String) {
+        try {
+            val emailCreador = despesaInfo.emailCreador
+            val idViatge = despesaInfo.viatgeId
+            val url = "$backendUrl/usuaris/$emailCreador/viatges/$idViatge/despeses/$despesaId"
+            val request = Request.Builder()
+                .url(url)
+                .delete()
+                .build()
+            print(request)
+            withContext(Dispatchers.IO) {
+                val response = client.newCall(request).execute()
+                print(response)
+                if (response.isSuccessful) {
+                    println("deleteDespesa: OK")
+                } else {
+                    println("deleteDespesa: Failed ${response.code}")
+                }
+            }
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+    }
+
+    suspend fun getDespesa(email: String, viatgeId: String, despesaId: String): DespesaInfo? {
+        var despesa: DespesaInfo? = null
+        try {
+            val url = "$backendUrl/usuaris/$email/viatges/$viatgeId/despeses/$despesaId"
+            val request = Request.Builder()
+                .url(url)
+                .get()
+                .build()
+
+            withContext(Dispatchers.IO) {
+                val response = client.newCall(request).execute()
+                if (response.isSuccessful) {
+                    println("getDespesa: OK")
+                    val responseBody = response.body?.string()
+                    responseBody?.let { json ->
+                        val jsonObject = JSONObject(json)
+                        val deutorsString = jsonObject.optString("deutors")
+                        val deutorsMap = mutableMapOf<String, Int>()
+
+                        if (deutorsString.isNotEmpty()) {
+                            val jsonObjectDeutors = JSONObject(deutorsString)
+                            val keys = jsonObjectDeutors.keys()
+
+                            keys.forEach { key ->
+                                val value = jsonObjectDeutors.getInt(key)
+                                deutorsMap[key] = value
+                            }
+                        }
+                        despesa = DespesaInfo(
+                            nomDespesa = jsonObject.getString("nomViatge"),
+                            viatgeId = jsonObject.getString("viatgeId"),
+                            emailCreador = jsonObject.getString("creador"),
+                            descripcio = jsonObject.optString("descripcio", null),
+                            preu = jsonObject.getInt("preu"),
+                            categoria = jsonObject.getString("categoria"),
+                            dataInici = jsonObject.getString("dataInici"),
+                            dataFi = if (jsonObject.isNull("dataFi")) null else jsonObject.getString("dataFi"),
+                            ubicacio_lat = if (jsonObject.isNull("ubicacio_lat")) null else jsonObject.getDouble("ubicacio_lat"),
+                            ubicacio_long = if (jsonObject.isNull("ubicacio_long")) null else jsonObject.getDouble("ubicacio_long"),
+                            deutors = deutorsMap
+                        )
+                    }
+                } else {
+                    println("getDespesa: Failed ${response.code}")
+                }
+            }
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+        return despesa
+    }
+
+    suspend fun getDespeses(emailCreador: String?, idViatge: String?): List<DespesaShowInfo> {
+        var despesesList = emptyList<DespesaShowInfo>()
+        try {
+            val url = "$backendUrl/usuaris/$emailCreador/viatges/$idViatge/despeses"
+            val request = Request.Builder()
+                .url(url)
+                .get()
+                .build()
+            print(request)
+            withContext(Dispatchers.IO) {
+                val response = client.newCall(request).execute()
+                print(response)
+                if (response.isSuccessful) {
+                    println("getDespeses: OK")
+                    val responseBody = response.body?.string()
+                    responseBody?.let { json ->
+                        val jsonArray = JSONArray(json)
+                        despesesList = mutableListOf()
+                        for (i in 0 until jsonArray.length()) {
+                            val jsonObject = jsonArray.getJSONObject(i)
+                            val despesaId = jsonObject.getInt("id").toString()
+                            val nomDespesa = jsonObject.getString("nomDespesa")
+                            val dataInici = SimpleDateFormat("yyyy-MM-dd").parse(jsonObject.getString("dataInici"))
+                            val preu = jsonObject.getInt("preu")
+                            val categoria = jsonObject.getString("categoria")
+                            val despesaInfo = DespesaShowInfo(despesaId, nomDespesa, dataInici, preu, categoria)
+                            (despesesList as MutableList<DespesaShowInfo>).add(despesaInfo)
+                        }
+                        println("despesesList: $despesesList")
+                    }
+                } else {
+                    println("getDespeses: Failed ${response.code}")
+                }
+            }
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+        println(despesesList)
+        return despesesList
     }
 }

@@ -51,6 +51,13 @@ class ViatgeEditar : AppCompatActivity() {
             setText(formatDate(viatgeInfo.dataFi))
             setOnClickListener { showDatePickerDialog(this) }
         }
+
+        val txtCancelar = findViewById<TextView>(R.id.txtCancelarEdicio)
+        txtCancelar.setOnClickListener {
+            startActivity(Intent(this@ViatgeEditar, Viatge::class.java))
+            finish()
+        }
+
         editTextPressupost = findViewById<EditText>(R.id.editTextPressupost)
         editTextPressupost.setText(viatgeInfo.pressupostTotal.toString())
 

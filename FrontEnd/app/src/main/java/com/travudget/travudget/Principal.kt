@@ -81,8 +81,7 @@ class Principal : AppCompatActivity() {
         CoroutineScope(Dispatchers.IO).launch {
             val sharedPreferences = getSharedPreferences("myPrefs", Context.MODE_PRIVATE)
             val googleEmail = sharedPreferences.getString("googleEmail", "")
-            val viatges: List<Pair<Int, String>> = BackendManager().getViatges(googleEmail)
-            println("VIATGES: $viatges")
+            val viatges: List<ViatgeShowInfo> = BackendManager().getViatges(googleEmail)
 
             val linearLayout = LinearLayout(contentFrame.context)
             linearLayout.orientation = LinearLayout.VERTICAL
@@ -93,7 +92,8 @@ class Principal : AppCompatActivity() {
 
                     cardView.setOnClickListener {
                         val intent = Intent(this@Principal, Viatge::class.java).apply {
-                            putExtra("viatgeId", viatge.first)
+                            putExtra("viatgeId", viatge.viatgeId)
+                            putExtra("emailCreador", viatge.emailCreador)
                         }
                         startActivity(intent)
                     }
@@ -112,12 +112,12 @@ class Principal : AppCompatActivity() {
     }
 
 
-    private fun createCardViewForViatge(viatgePair: Pair<Int, String>): CardView {
+    private fun createCardViewForViatge(viatgeShowInfo: ViatgeShowInfo): CardView {
         val inflater = LayoutInflater.from(this)
         val cardView = inflater.inflate(R.layout.cards_viatges, null) as CardView
 
         val textView = cardView.findViewById<TextView>(R.id.textView)
-        textView.text = viatgePair.second
+        textView.text = viatgeShowInfo.nomViatge
         textView.setTextColor(Color.BLACK)
 
         return cardView
