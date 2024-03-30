@@ -96,6 +96,7 @@ class Principal : AppCompatActivity() {
                             putExtra("emailCreador", viatge.emailCreador)
                         }
                         startActivity(intent)
+                        finish()
                     }
 
                     val layoutParams = LinearLayout.LayoutParams(

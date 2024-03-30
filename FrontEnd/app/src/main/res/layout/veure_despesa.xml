@@ -48,29 +48,69 @@
             android:id="@+id/content_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:gravity="center_horizontal"
+            android:orientation="horizontal">
 
-            <LinearLayout
-                android:id="@+id/layoutCategoria"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_below="@id/layoutBarraSuperior"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="80dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginBottom="16dp"
-                android:gravity="center">
+            <ImageView
+                android:id="@+id/imageViewAllotjament"
+                android:layout_width="96dp"
+                android:layout_height="96dp"
+                android:src="@drawable/ic_categoria_allotjament"
+                android:padding="8dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:contentDescription="Allotjament"/>
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Canviar per foto"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:layout_marginEnd="8dp" />
+            <ImageView
+                android:id="@+id/imageViewCompres"
+                android:layout_width="96dp"
+                android:layout_height="96dp"
+                android:src="@drawable/ic_categoria_compres"
+                android:padding="8dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:contentDescription="Compres"/>
 
-            </LinearLayout>
+            <ImageView
+                android:id="@+id/imageViewMenjar"
+                android:layout_width="96dp"
+                android:layout_height="96dp"
+                android:src="@drawable/ic_categoria_menjar"
+                android:padding="8dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:contentDescription="Menjar"/>
+            <ImageView
+                android:id="@+id/imageViewTransport"
+                android:layout_width="96dp"
+                android:layout_height="96dp"
+                android:src="@drawable/ic_categoria_transport"
+                android:padding="8dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:contentDescription="Transport"/>
+
+            <ImageView
+                android:id="@+id/imageViewTurisme"
+                android:layout_width="96dp"
+                android:layout_height="96dp"
+                android:src="@drawable/ic_categoria_turisme"
+                android:padding="8dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:contentDescription="Turisme"/>
+
+            <ImageView
+                android:id="@+id/imageViewAltres"
+                android:layout_width="96dp"
+                android:layout_height="96dp"
+                android:src="@drawable/ic_categoria_altres"
+                android:padding="8dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:contentDescription="Altres"/>
+
+        </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/layoutPreu"
@@ -85,6 +125,7 @@
                 android:gravity="center">
 
                 <TextView
+                    android:id="@+id/textPreu"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Preu"
@@ -107,6 +148,7 @@
                 android:gravity="center">
 
                 <TextView
+                    android:id="@+id/textNomDespesa"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="NomDespesa"
@@ -136,6 +178,7 @@
                     android:src="@drawable/ic_calendar" />
 
                 <TextView
+                    android:id="@+id/textDataInici"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
@@ -166,6 +209,7 @@
                     android:src="@drawable/ic_calendar" />
 
                 <TextView
+                    android:id="@+id/textDataFi"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
@@ -196,6 +240,7 @@
                     android:src="@drawable/ic_ubicacio" />
 
                 <TextView
+                    android:id="@+id/textUbicacio"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
@@ -207,9 +252,5 @@
             </LinearLayout>
 
         </LinearLayout>
-
-    </LinearLayout>
-
-
 
 </androidx.drawerlayout.widget.DrawerLayout>

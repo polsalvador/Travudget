@@ -307,12 +307,24 @@ class BackendManager {
     suspend fun editDespesa(despesaInfo: DespesaInfo, despesaId: String) {
         try {
             val emailCreador = despesaInfo.emailCreador
-            val requestBody = "{\"nomDespesa\": \"${despesaInfo.nomDespesa}\", \"creador\": \"${emailCreador}\", \"descripcio\": \"${despesaInfo.descripcio}\", \"preu\": \"${despesaInfo.preu}\", \"categoria\": \"${despesaInfo.categoria}\", \"dataInici\": \"${despesaInfo.dataInici}\", \"dataFi\": \"${despesaInfo.dataFi}\", \"ubicacio_lat\": \"${despesaInfo.ubicacio_lat}\", \"ubicacio_long\": \"${despesaInfo.ubicacio_long}\", \"deutors\": \"${despesaInfo.deutors}\"}".toRequestBody(jsonMediaType)
+            val lat = despesaInfo.ubicacio_lat?.toFloat()
+            val long = despesaInfo.ubicacio_long?.toFloat()
+
+            val originalFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+            val targetFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+
+            val dataIniciDate = originalFormat.parse(despesaInfo.dataInici)
+            val dataFiDate = originalFormat.parse(despesaInfo.dataFi)
+
+            val dataInici = targetFormat.format(dataIniciDate)
+            val dataFi = targetFormat.format(dataFiDate)
+
+            val requestBody = "{\"nomDespesa\": \"${despesaInfo.nomDespesa}\", \"creador\": \"${emailCreador}\", \"descripcio\": \"${despesaInfo.descripcio}\", \"preu\": \"${despesaInfo.preu}\", \"categoria\": \"${despesaInfo.categoria}\", \"dataInici\": \"${dataInici}\", \"dataFi\": \"${dataFi}\", \"ubicacio_lat\": \"${lat}\", \"ubicacio_long\": \"${long}\", \"deutors\": \"${despesaInfo.deutors}\"}".toRequestBody(jsonMediaType)
             val idViatge = despesaInfo.viatgeId
             val url = "$backendUrl/usuaris/$emailCreador/viatges/$idViatge/despeses/$despesaId"
             val request = Request.Builder()
                 .url(url)
-                .post(requestBody)
+                .put(requestBody)
                 .build()
             print(request)
             withContext(Dispatchers.IO) {
@@ -382,8 +394,8 @@ class BackendManager {
                             }
                         }
                         despesa = DespesaInfo(
-                            nomDespesa = jsonObject.getString("nomViatge"),
-                            viatgeId = jsonObject.getString("viatgeId"),
+                            nomDespesa = jsonObject.getString("nomDespesa"),
+                            viatgeId = jsonObject.getString("viatge"),
                             emailCreador = jsonObject.getString("creador"),
                             descripcio = jsonObject.optString("descripcio", null),
                             preu = jsonObject.getInt("preu"),

@@ -90,6 +90,7 @@ class Viatge : AppCompatActivity() {
 
         val viatgeId = intent.getStringExtra("viatgeId")
         val emailCreador = intent.getStringExtra("emailCreador")
+
         btnAddDespesa.setOnClickListener {
             val intent = Intent(this@Viatge, CrearDespesa::class.java).apply {
                 putExtra("viatgeId", viatgeId)
@@ -196,6 +197,7 @@ class Viatge : AppCompatActivity() {
                                 putExtra("emailCreador", emailCreador)
                                 putExtra("viatgeId", viatgeId)
                                 putExtra("despesaId", despesa.despesaId)
+                                putExtra("divisa", viatgeInfo.divisa)
                             }
                             startActivity(intent)
                         }
