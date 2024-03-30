@@ -58,6 +58,7 @@ class CrearDespesa : AppCompatActivity() {
                 putExtra("viatgeId", viatgeId)
                 putExtra("emailCreador", emailCreador)
             }
+            Thread.sleep(500)
             startActivity(intent)
             finish()
         }
@@ -176,6 +177,7 @@ class CrearDespesa : AppCompatActivity() {
                             putExtra("viatgeId", viatgeId)
                             putExtra("emailCreador", emailCreador)
                         }
+                        Thread.sleep(500)
                         startActivity(intent)
                         finish()
                     }

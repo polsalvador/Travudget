@@ -65,6 +65,7 @@ class EditarDespesa : AppCompatActivity() {
                 putExtra("despesaId", despesaId)
                 putExtra("divisa", divisa)
             }
+            Thread.sleep(500)
             startActivity(intent)
             finish()
         }
@@ -185,6 +186,7 @@ class EditarDespesa : AppCompatActivity() {
                             putExtra("viatgeId", viatgeId)
                             putExtra("emailCreador", emailCreador)
                         }
+                        Thread.sleep(500)
                         startActivity(intent)
                         finish()
                     }

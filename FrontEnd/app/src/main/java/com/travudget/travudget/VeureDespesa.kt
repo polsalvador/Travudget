@@ -56,7 +56,9 @@ class VeureDespesa : AppCompatActivity() {
                 putExtra("emailCreador", emailCreador)
                 putExtra("viatgeId", viatgeId)
             }
+            Thread.sleep(500)
             startActivity(intent)
+            finish()
         }
 
         btnOptions.setOnClickListener {
@@ -131,27 +133,34 @@ class VeureDespesa : AppCompatActivity() {
                         putExtra("viatgeId", viatgeId)
                         putExtra("divisa", divisa)
                     }
+                    Thread.sleep(500)
                     startActivity(intent)
                     finish()
                     true
                 }
                 R.id.menu_delete -> {
-//                    AlertDialog.Builder(this)
-//                        .setTitle("Estàs segur de que vols eliminar la despesa?")
-//                        .setPositiveButton("Sí") { _, _ ->
-//                            CoroutineScope(Dispatchers.IO).launch {
-//                                val sharedPreferences =
-//                                    getSharedPreferences("myPrefs", Context.MODE_PRIVATE)
-//                                val googleEmail = sharedPreferences.getString("googleEmail", "")
-//                                backendManager.deleteViatge(googleEmail, viatgeInfo.viatgeId)
-//                            }
-//                            startActivity(Intent(this@Viatge, Principal::class.java))
-//                            finish()
-//                        }
-//                        .setNegativeButton("No") { dialog, _ ->
-//                            dialog.dismiss()
-//                        }
-//                        .show()
+                    AlertDialog.Builder(this)
+                        .setTitle("Estàs segur de que vols eliminar la despesa?")
+                        .setPositiveButton("Sí") { _, _ ->
+                            val emailCreador = intent.getStringExtra("emailCreador")!!
+                            val viatgeId = intent.getStringExtra("viatgeId")!!
+                            val despesaId = intent.getStringExtra("despesaId")!!
+
+                            CoroutineScope(Dispatchers.IO).launch {
+                                backendManager.deleteDespesa(emailCreador, viatgeId, despesaId)
+                            }
+                            val intent = Intent(this, Viatge::class.java).apply {
+                                putExtra("emailCreador", emailCreador)
+                                putExtra("viatgeId", viatgeId)
+                            }
+                            Thread.sleep(500)
+                            startActivity(intent)
+                            finish()
+                        }
+                        .setNegativeButton("No") { dialog, _ ->
+                            dialog.dismiss()
+                        }
+                        .show()
                     true
                 }
                 else -> false

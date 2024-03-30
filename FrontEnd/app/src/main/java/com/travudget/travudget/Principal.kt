@@ -38,6 +38,7 @@ class Principal : AppCompatActivity() {
 
         val createViatge = findViewById<ImageButton>(R.id.btn_add_viatge)
         createViatge.setOnClickListener {
+            Thread.sleep(500)
             startActivity(Intent(this, CrearViatge::class.java))
             finish()
         }
@@ -59,6 +60,7 @@ class Principal : AppCompatActivity() {
                             val editor = sharedPreferences.edit()
                             editor.clear()
                             editor.apply()
+                            Thread.sleep(500)
                             startActivity(Intent(this, IniciSessio::class.java))
                             finish()
                         }
@@ -95,6 +97,7 @@ class Principal : AppCompatActivity() {
                             putExtra("viatgeId", viatge.viatgeId)
                             putExtra("emailCreador", viatge.emailCreador)
                         }
+                        Thread.sleep(500)
                         startActivity(intent)
                         finish()
                     }

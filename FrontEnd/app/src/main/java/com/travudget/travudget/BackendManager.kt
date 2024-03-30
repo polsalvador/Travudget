@@ -341,11 +341,9 @@ class BackendManager {
         }
     }
 
-    suspend fun deleteDespesa(despesaInfo: DespesaInfo, despesaId: String) {
+    suspend fun deleteDespesa(emailCreador: String, viatgeId: String, despesaId: String) {
         try {
-            val emailCreador = despesaInfo.emailCreador
-            val idViatge = despesaInfo.viatgeId
-            val url = "$backendUrl/usuaris/$emailCreador/viatges/$idViatge/despeses/$despesaId"
+            val url = "$backendUrl/usuaris/$emailCreador/viatges/$viatgeId/despeses/$despesaId"
             val request = Request.Builder()
                 .url(url)
                 .delete()

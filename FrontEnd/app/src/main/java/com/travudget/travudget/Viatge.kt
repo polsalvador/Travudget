@@ -46,6 +46,7 @@ class Viatge : AppCompatActivity() {
         val contentFrame = findViewById<FrameLayout>(R.id.content_frame)
 
         btnReturn.setOnClickListener {
+            Thread.sleep(500)
             startActivity(Intent(this, Principal::class.java))
             finish()
         }
@@ -57,6 +58,7 @@ class Viatge : AppCompatActivity() {
         navView.setNavigationItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.nav_viatges -> {
+                    Thread.sleep(500)
                     startActivity(Intent(this, Principal::class.java))
                     finish()
                     true
@@ -72,6 +74,7 @@ class Viatge : AppCompatActivity() {
                             val editor = sharedPreferences.edit()
                             editor.clear()
                             editor.apply()
+                            Thread.sleep(500)
                             startActivity(Intent(this, IniciSessio::class.java))
                             finish()
                         }
@@ -132,6 +135,7 @@ class Viatge : AppCompatActivity() {
                     val intent = Intent(this, ViatgeEditar::class.java).apply {
                         putExtra("viatgeInfo", viatgeInfo)
                     }
+                    Thread.sleep(500)
                     startActivity(intent)
                     finish()
                     true
@@ -150,6 +154,7 @@ class Viatge : AppCompatActivity() {
                                 val googleEmail = sharedPreferences.getString("googleEmail", "")
                                 backendManager.deleteViatge(googleEmail, viatgeInfo.viatgeId)
                             }
+                            Thread.sleep(500)
                             startActivity(Intent(this@Viatge, Principal::class.java))
                             finish()
                         }
@@ -199,6 +204,7 @@ class Viatge : AppCompatActivity() {
                                 putExtra("despesaId", despesa.despesaId)
                                 putExtra("divisa", viatgeInfo.divisa)
                             }
+                            Thread.sleep(500)
                             startActivity(intent)
                         }
                         val layoutParams = LinearLayout.LayoutParams(
