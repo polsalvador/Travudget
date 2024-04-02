@@ -188,3 +188,44 @@ class DespesaTestCase(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertFalse(Despesa.objects.filter(id=despesa.id).exists())
+    
+    def test_get_despeses_with_filters(self):
+        email = "polsalvador@gmail.com"
+
+        usuari = Usuari.objects.create(email=email)
+        viatge = Viatge.objects.create(
+            nomViatge="Viatge a la FIB",
+            creador=usuari,
+            divisa="EUR",
+            pressupostTotal=200
+        )
+
+        Despesa.objects.create(
+            nomDespesa="Pitifli a la FIB",
+            viatge=viatge,
+            creador=email,
+            preu=30,
+            categoria="Menjar",
+            dataInici=date.today(),
+        )
+
+        Despesa.objects.create(
+            nomDespesa="Ordinador",
+            viatge=viatge,
+            creador=email,
+            preu=200,
+            categoria="Turisme",
+            dataInici=date.today(),
+        )
+
+        url = '/usuaris/polsalvador@gmail.com/viatges/1/despeses?preuMinim=10&preuMaxim=100&categoria=Menjar&categoria=Turisme'
+        print("URL: ", url)
+        request = self.factory.get(url)
+
+        response = create_or_get_despesa(request, email, viatge.id)
+        print("RESPONSE DATA: ", response.data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 1)
+
+        despesa = response.data[0]
+        self.assertEqual(despesa['nomDespesa'], "Pitifli a la FIB")

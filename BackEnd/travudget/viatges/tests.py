@@ -1,7 +1,7 @@
 from django.test import TestCase
 from rest_framework import status
 from rest_framework.test import APIRequestFactory
-from .views import create_or_get_viatge, get_or_edit_or_delete_viatge
+from .views import create_or_get_viatge, get_or_edit_or_delete_viatge, join_or_eject_viatge, get_viatges_participant
 from .models import Viatge
 from usuaris.models import Usuari
 
@@ -248,3 +248,33 @@ class ViatgeTestCase(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertFalse(Viatge.objects.filter(id=viatge.id).exists())
+
+    def test_join_viatge(self):
+        email = "polsalvador1@gmail.com"
+        usuari = Usuari.objects.create(email=email)
+
+        email2 = "polsalvador2@gmail.com"
+        username2 = "12345"
+        usuari2 = Usuari.objects.create(email=email2, username=username2)
+
+        viatge = Viatge.objects.create(
+            nomViatge="Test Viatge",
+            dataInici="2023-01-01",
+            dataFi="2023-01-05",
+            divisa="EUR",
+            creador=usuari,
+            codi="ABCDE",
+            pressupostTotal=500
+        )
+        request_data = {
+        "codi": "ABCDE"
+        }
+        request = self.factory.post(f'/usuaris/{email2}/viatges/{viatge.id}/share', data=request_data)
+
+        response = join_or_eject_viatge(request, email2, viatge.id)
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        
+        viatge_refreshed = Viatge.objects.get(id=viatge.id)
+        participants = viatge_refreshed.participants.filter(email=email2)
+        self.assertTrue(participants.exists())

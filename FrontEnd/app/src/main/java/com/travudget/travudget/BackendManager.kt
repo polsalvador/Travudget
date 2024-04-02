@@ -11,7 +11,8 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.IOException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import okhttp3.FormBody
+import okhttp3.HttpUrl
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import java.net.URLEncoder
 import org.json.JSONArray
 import org.json.JSONObject
@@ -453,6 +454,53 @@ class BackendManager {
             e.printStackTrace()
         }
         println(despesesList)
+        return despesesList
+    }
+
+    suspend fun getDespesesFiltrades(emailCreador: String?, idViatge: String?, categories: Array<String>?, preuMinim: Int, preuMaxim: Int): List<DespesaShowInfo> {
+        var despesesList = emptyList<DespesaShowInfo>()
+        try {
+            val baseUrl = "$backendUrl/usuaris/$emailCreador/viatges/$idViatge/despeses"
+            val urlBuilder = baseUrl.toHttpUrlOrNull()?.newBuilder()
+
+            urlBuilder?.addQueryParameter("preuMinim", preuMinim.toString())
+            urlBuilder?.addQueryParameter("preuMaxim", preuMaxim.toString())
+            categories?.forEach { category ->
+                urlBuilder?.addQueryParameter("categoria", category)
+            }
+
+            val url = urlBuilder?.build()
+            println("URL: " + url)
+            url?.let {
+                val request = Request.Builder()
+                    .url(it)
+                    .get()
+                    .build()
+
+                withContext(Dispatchers.IO) {
+                    val response = client.newCall(request).execute()
+                    if (response.isSuccessful) {
+                        val responseBody = response.body?.string()
+                        responseBody?.let { json ->
+                            val jsonArray = JSONArray(json)
+                            despesesList = mutableListOf()
+                            for (i in 0 until jsonArray.length()) {
+                                val jsonObject = jsonArray.getJSONObject(i)
+                                val despesaId = jsonObject.getInt("id").toString()
+                                val nomDespesa = jsonObject.getString("nomDespesa")
+                                val dataInici = SimpleDateFormat("yyyy-MM-dd").parse(jsonObject.getString("dataInici"))
+                                val preu = jsonObject.getInt("preu")
+                                val categoria = jsonObject.getString("categoria")
+                                val despesaInfo = DespesaShowInfo(despesaId, nomDespesa, dataInici, preu, categoria)
+                                (despesesList as MutableList<DespesaShowInfo>).add(despesaInfo)
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
         return despesesList
     }
 }

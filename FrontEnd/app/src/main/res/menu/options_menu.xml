@@ -3,6 +3,9 @@
         android:id="@+id/menu_edit"
         android:title="Editar" />
     <item
+        android:id="@+id/menu_filtrar"
+        android:title="Filtrar" />
+    <item
         android:id="@+id/menu_informe"
         android:title="Informe" />
     <item

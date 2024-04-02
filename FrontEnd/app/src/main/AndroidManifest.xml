@@ -63,5 +63,8 @@
         <activity
             android:name=".MapActivity">
         </activity>
+        <activity
+            android:name=".FiltrarDespeses">
+        </activity>
     </application>
 </manifest>

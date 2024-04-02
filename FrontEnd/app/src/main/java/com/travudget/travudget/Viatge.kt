@@ -104,10 +104,7 @@ class Viatge : AppCompatActivity() {
         }
 
         CoroutineScope(Dispatchers.IO).launch {
-            val sharedPreferences = getSharedPreferences("myPrefs", Context.MODE_PRIVATE)
-            val googleEmail = sharedPreferences.getString("googleEmail", "")
-
-            viatgeInfo = backendManager.getViatge(googleEmail, viatgeId)!!
+            viatgeInfo = backendManager.getViatge(emailCreador, viatgeId)!!
 
             runOnUiThread {
                 val textView = findViewById<TextView>(R.id.textViewViatge)
@@ -129,11 +126,24 @@ class Viatge : AppCompatActivity() {
 
         deleteMenuItem.title = spannableString
 
+        val viatgeId = intent.getStringExtra("viatgeId")
+        val emailCreador = intent.getStringExtra("emailCreador")
+
         popupMenu.setOnMenuItemClickListener { item ->
             when (item.itemId) {
                 R.id.menu_edit -> {
                     val intent = Intent(this, ViatgeEditar::class.java).apply {
                         putExtra("viatgeInfo", viatgeInfo)
+                    }
+                    Thread.sleep(500)
+                    startActivity(intent)
+                    finish()
+                    true
+                }
+                R.id.menu_filtrar -> {
+                    val intent = Intent(this, FiltrarDespeses::class.java).apply {
+                        putExtra("viatgeId", viatgeId)
+                        putExtra("emailCreador", emailCreador)
                     }
                     Thread.sleep(500)
                     startActivity(intent)
@@ -149,10 +159,7 @@ class Viatge : AppCompatActivity() {
                         .setTitle("Estàs segur de que vols eliminar el viatge?")
                         .setPositiveButton("Sí") { _, _ ->
                             CoroutineScope(Dispatchers.IO).launch {
-                                val sharedPreferences =
-                                    getSharedPreferences("myPrefs", Context.MODE_PRIVATE)
-                                val googleEmail = sharedPreferences.getString("googleEmail", "")
-                                backendManager.deleteViatge(googleEmail, viatgeInfo.viatgeId)
+                                backendManager.deleteViatge(emailCreador, viatgeInfo.viatgeId)
                             }
                             Thread.sleep(500)
                             startActivity(Intent(this@Viatge, Principal::class.java))
@@ -175,8 +182,17 @@ class Viatge : AppCompatActivity() {
         CoroutineScope(Dispatchers.IO).launch {
             val viatgeId = intent.getStringExtra("viatgeId")
             val emailCreador = intent.getStringExtra("emailCreador")
-            val despeses: List<DespesaShowInfo> = BackendManager().getDespeses(emailCreador, viatgeId)
+            val despeses: List<DespesaShowInfo>
 
+            if (intent.hasExtra("preuMinim")) {
+                val preuMinim = intent.getIntExtra("preuMinim", 0)
+                val preuMaxim = intent.getIntExtra("preuMaxim", 0)
+                val categories: Array<String>? = intent.getStringArrayExtra("categories")
+
+                despeses = BackendManager().getDespesesFiltrades(emailCreador, viatgeId, categories, preuMinim, preuMaxim)
+            } else {
+                despeses = BackendManager().getDespeses(emailCreador, viatgeId)
+            }
             val linearLayout = LinearLayout(contentFrame.context)
             linearLayout.orientation = LinearLayout.VERTICAL
 
