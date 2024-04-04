@@ -17,9 +17,8 @@ import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.cardview.widget.CardView
 import android.graphics.Color
-import android.text.Spannable
-import android.text.SpannableString
-import android.text.style.ForegroundColorSpan
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.PopupMenu
@@ -29,7 +28,7 @@ import kotlinx.coroutines.launch
 
 class Principal : AppCompatActivity() {
     private val backendManager = BackendManager()
-
+    private val handler = Handler(Looper.getMainLooper())
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.principal)
@@ -66,6 +65,7 @@ class Principal : AppCompatActivity() {
                             editor.clear()
                             editor.apply()
                             Thread.sleep(500)
+                            handler.removeCallbacksAndMessages(null)
                             startActivity(Intent(this, IniciSessio::class.java))
                             finish()
                         }
@@ -82,6 +82,13 @@ class Principal : AppCompatActivity() {
         }
 
         showViatges(contentFrame)
+
+        handler.postDelayed(object : Runnable {
+            override fun run() {
+                showViatges(contentFrame)
+                handler.postDelayed(this, 2000)
+            }
+        }, 2000)
     }
 
     private fun showViatges(contentFrame: FrameLayout) {
@@ -94,6 +101,8 @@ class Principal : AppCompatActivity() {
             linearLayout.orientation = LinearLayout.VERTICAL
 
             runOnUiThread {
+                contentFrame.removeAllViews()
+
                 for (viatge in viatges) {
                     val cardView = createCardViewForViatge(viatge)
 
@@ -103,6 +112,7 @@ class Principal : AppCompatActivity() {
                             putExtra("emailCreador", viatge.emailCreador)
                         }
                         Thread.sleep(500)
+                        handler.removeCallbacksAndMessages(null)
                         startActivity(intent)
                         finish()
                     }
@@ -125,6 +135,8 @@ class Principal : AppCompatActivity() {
         val inflater = LayoutInflater.from(this)
         val cardView = inflater.inflate(R.layout.cards_viatges, null) as CardView
 
+        cardView.setCardBackgroundColor(Color.TRANSPARENT)
+
         val textView = cardView.findViewById<TextView>(R.id.textView)
         textView.text = viatgeShowInfo.nomViatge
         textView.setTextColor(Color.BLACK)
@@ -143,12 +155,14 @@ class Principal : AppCompatActivity() {
             when (item.itemId) {
                 R.id.menu_crear -> {
                     Thread.sleep(500)
+                    handler.removeCallbacksAndMessages(null)
                     startActivity(Intent(this, CrearViatge::class.java))
                     finish()
                     true
                 }
                 R.id.menu_unio -> {
                     Thread.sleep(500)
+                    handler.removeCallbacksAndMessages(null)
                     startActivity(Intent(this, IntroduirCodi::class.java))
                     finish()
                     true

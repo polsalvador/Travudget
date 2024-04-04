@@ -2,13 +2,11 @@ package com.travudget.travudget
 
 import android.content.Context
 import android.content.Intent
-import android.graphics.Color
 import android.widget.PopupMenu
 import android.os.Bundle
 import android.text.Html
-import android.text.Spannable
-import android.text.SpannableString
-import android.text.style.ForegroundColorSpan
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.FrameLayout
@@ -34,6 +32,7 @@ class Viatge : AppCompatActivity() {
 
     private lateinit var viatgeInfo: ViatgeInfo
     private val backendManager = BackendManager()
+    private val handler = Handler(Looper.getMainLooper())
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,17 +43,18 @@ class Viatge : AppCompatActivity() {
         val btnReturn = findViewById<ImageButton>(R.id.btn_return)
         val navView = findViewById<NavigationView>(R.id.nav_view)
         val contentFrame = findViewById<FrameLayout>(R.id.content_frame)
-
+        val nomButton = findViewById<TextView>(R.id.textViewViatge)
         val viatgeId = intent.getStringExtra("viatgeId")
         val emailCreador = intent.getStringExtra("emailCreador")
 
         btnReturn.setOnClickListener {
             Thread.sleep(500)
+            handler.removeCallbacksAndMessages(null)
             startActivity(Intent(this, Principal::class.java))
             finish()
         }
 
-        btnInfo.setOnClickListener {
+        nomButton.setOnClickListener {
             CoroutineScope(Dispatchers.IO).launch {
                 viatgeInfo = backendManager.getViatge(emailCreador, viatgeId)!!
                 Thread.sleep(500)
@@ -63,15 +63,21 @@ class Viatge : AppCompatActivity() {
                     putExtra("emailCreador", emailCreador)
                     putExtra("viatgeInfo", viatgeInfo)
                 }
+                handler.removeCallbacksAndMessages(null)
                 startActivity(intent)
                 finish()
             }
+        }
+
+        btnInfo.setOnClickListener {
+            showPopupMenu(btnInfo)
         }
         
         navView.setNavigationItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.nav_viatges -> {
                     Thread.sleep(500)
+                    handler.removeCallbacksAndMessages(null)
                     startActivity(Intent(this, Principal::class.java))
                     finish()
                     true
@@ -88,6 +94,7 @@ class Viatge : AppCompatActivity() {
                             editor.clear()
                             editor.apply()
                             Thread.sleep(500)
+                            handler.removeCallbacksAndMessages(null)
                             startActivity(Intent(this, IniciSessio::class.java))
                             finish()
                         }
@@ -109,6 +116,7 @@ class Viatge : AppCompatActivity() {
                 putExtra("viatgeId", viatgeId)
                 putExtra("emailCreador", emailCreador)
             }
+            handler.removeCallbacksAndMessages(null)
             startActivity(intent)
             finish()
         }
@@ -123,6 +131,13 @@ class Viatge : AppCompatActivity() {
             }
         }
         showDespeses(contentFrame)
+
+        handler.postDelayed(object : Runnable {
+            override fun run() {
+                showDespeses(contentFrame)
+                handler.postDelayed(this, 2000)
+            }
+        }, 2000)
     }
 
     private fun showDespeses(contentFrame: FrameLayout) {
@@ -154,6 +169,8 @@ class Viatge : AppCompatActivity() {
             }
 
             runOnUiThread {
+                contentFrame.removeAllViews()
+
                 for ((data, listaDespesas) in despesesPerData) {
                     val headerView = createHeaderView(data)
                     linearLayout.addView(headerView)
@@ -230,5 +247,36 @@ class Viatge : AppCompatActivity() {
         }
 
         return cardView
+    }
+
+    private fun showPopupMenu(view: View) {
+        val popupMenu = PopupMenu(this, view)
+        popupMenu.inflate(R.menu.options_menu)
+
+        val viatgeId = intent.getStringExtra("viatgeId")
+        val emailCreador = intent.getStringExtra("emailCreador")
+
+        popupMenu.setOnMenuItemClickListener { item ->
+            when (item.itemId) {
+                R.id.menu_filtrar -> {
+                    val intent = Intent(this, FiltrarDespeses::class.java).apply {
+                        putExtra("viatgeId", viatgeId)
+                        putExtra("emailCreador", emailCreador)
+                    }
+                    Thread.sleep(500)
+                    handler.removeCallbacksAndMessages(null)
+                    startActivity(intent)
+                    finish()
+                    true
+                }
+                R.id.menu_informe -> {
+                    //
+                    true
+                }
+                else -> false
+            }
+        }
+
+        popupMenu.show()
     }
 }

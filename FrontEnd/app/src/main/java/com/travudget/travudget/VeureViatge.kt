@@ -86,7 +86,7 @@ class VeureViatge : AppCompatActivity() {
                 orientation = LinearLayout.HORIZONTAL
             }
 
-            val rectangle = EditText(this).apply {
+            val rectangle = TextView(this).apply {
                 layoutParams = LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.WRAP_CONTENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT
@@ -164,7 +164,7 @@ class VeureViatge : AppCompatActivity() {
 
     private fun showPopupMenu(view: View) {
         val popupMenu = PopupMenu(this, view)
-        popupMenu.inflate(R.menu.options_menu)
+        popupMenu.inflate(R.menu.options_menu_viatge)
 
         val deleteMenuItem = popupMenu.menu.findItem(R.id.menu_delete)
 
@@ -186,20 +186,6 @@ class VeureViatge : AppCompatActivity() {
                     Thread.sleep(500)
                     startActivity(intent)
                     finish()
-                    true
-                }
-                R.id.menu_filtrar -> {
-                    val intent = Intent(this, FiltrarDespeses::class.java).apply {
-                        putExtra("viatgeId", viatgeId)
-                        putExtra("emailCreador", emailCreador)
-                    }
-                    Thread.sleep(500)
-                    startActivity(intent)
-                    finish()
-                    true
-                }
-                R.id.menu_informe -> {
-                    //
                     true
                 }
                 R.id.menu_delete -> {

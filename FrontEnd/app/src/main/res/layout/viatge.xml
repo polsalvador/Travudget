@@ -47,7 +47,7 @@
                     android:layout_gravity="right"
                     android:layout_marginEnd="8dp"
                     android:background="?attr/selectableItemBackgroundBorderless"
-                    android:src="@drawable/ic_info" />
+                    android:src="@drawable/ic_options" />
 
                 <ImageButton
                     android:id="@+id/btn_add_despesa"

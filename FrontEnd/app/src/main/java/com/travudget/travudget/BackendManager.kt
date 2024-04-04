@@ -97,7 +97,7 @@ class BackendManager {
                             }
                         }
 
-                        val participantsJsonArray = jsonObject.getJSONArray("participants")
+                        val participantsJsonArray = jsonObject.getJSONArray("emails_participants")
                         val participantsList = mutableListOf<String>()
                         for (i in 0 until participantsJsonArray.length()) {
                             val participantEmail = participantsJsonArray.getString(i)

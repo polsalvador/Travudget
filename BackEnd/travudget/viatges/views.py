@@ -49,6 +49,7 @@ def create_or_get_viatge(request, email):
             usuari = Usuari.objects.get(email=email)
             viatges = Viatge.objects.filter(creador=usuari.id)
             serializer = ViatgeSerializer(viatges, many=True)
+
             return Response(serializer.data)
         except Usuari.DoesNotExist:
             return Response({"message": "L'usuari no existeix"}, status=status.HTTP_404_NOT_FOUND)
@@ -60,7 +61,9 @@ def get_or_edit_or_delete_viatge(request, email, id):
             usuari = Usuari.objects.get(email=email)
             viatge = Viatge.objects.get(id=int(id), creador_id=usuari.id)
             serializer = ViatgeSerializer(viatge)
-            return Response(serializer.data)
+            serializer_data = serializer.data
+            serializer_data['emails_participants'] = [participant.email for participant in viatge.participants.all()]
+            return Response(serializer_data)
         except Usuari.DoesNotExist:
             return Response({"message": "L'usuari no existeix"}, status=status.HTTP_404_NOT_FOUND)
         except Viatge.DoesNotExist:

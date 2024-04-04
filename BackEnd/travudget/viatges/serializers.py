@@ -10,3 +10,6 @@ class ViatgeSerializer(serializers.ModelSerializer):
 
     def get_creador_email(self, obj):
         return obj.creador.email
+    
+    def get_emails_participants(self, obj):
+        return [participant.email for participant in obj.participants.all()]
