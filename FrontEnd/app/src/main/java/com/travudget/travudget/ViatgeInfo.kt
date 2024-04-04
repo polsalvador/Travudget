@@ -11,8 +11,8 @@ data class ViatgeInfo(
     var divisa: String,
     var pressupostTotal: Int,
     var pressupostVariable: MutableMap<String, Int>,
-    var deutes: List<Any>,
+    var deutes: MutableMap<String, Int>,
     var codi: String,
     var creadorId: Int,
-    var participantsIds: List<Any>
+    var participants: List<String>
 ) : Serializable

@@ -39,11 +39,14 @@ class Viatge : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.viatge)
 
-        val btnOptions = findViewById<ImageButton>(R.id.btn_options)
+        val btnInfo = findViewById<ImageButton>(R.id.btn_info)
         val btnAddDespesa = findViewById<ImageButton>(R.id.btn_add_despesa)
         val btnReturn = findViewById<ImageButton>(R.id.btn_return)
         val navView = findViewById<NavigationView>(R.id.nav_view)
         val contentFrame = findViewById<FrameLayout>(R.id.content_frame)
+
+        val viatgeId = intent.getStringExtra("viatgeId")
+        val emailCreador = intent.getStringExtra("emailCreador")
 
         btnReturn.setOnClickListener {
             Thread.sleep(500)
@@ -51,8 +54,18 @@ class Viatge : AppCompatActivity() {
             finish()
         }
 
-        btnOptions.setOnClickListener {
-            showPopupMenu(btnOptions)
+        btnInfo.setOnClickListener {
+            CoroutineScope(Dispatchers.IO).launch {
+                viatgeInfo = backendManager.getViatge(emailCreador, viatgeId)!!
+                Thread.sleep(500)
+                val intent = Intent(this@Viatge, VeureViatge::class.java).apply {
+                    putExtra("viatgeId", viatgeId)
+                    putExtra("emailCreador", emailCreador)
+                    putExtra("viatgeInfo", viatgeInfo)
+                }
+                startActivity(intent)
+                finish()
+            }
         }
         
         navView.setNavigationItemSelectedListener { menuItem ->
@@ -91,9 +104,6 @@ class Viatge : AppCompatActivity() {
         val drawerLayout = findViewById<DrawerLayout>(R.id.drawer_layout_viatge)
         drawerLayout.visibility = View.INVISIBLE
 
-        val viatgeId = intent.getStringExtra("viatgeId")
-        val emailCreador = intent.getStringExtra("emailCreador")
-
         btnAddDespesa.setOnClickListener {
             val intent = Intent(this@Viatge, CrearDespesa::class.java).apply {
                 putExtra("viatgeId", viatgeId)
@@ -113,69 +123,6 @@ class Viatge : AppCompatActivity() {
             }
         }
         showDespeses(contentFrame)
-    }
-
-    private fun showPopupMenu(view: View) {
-        val popupMenu = PopupMenu(this, view)
-        popupMenu.inflate(R.menu.options_menu)
-
-        val deleteMenuItem = popupMenu.menu.findItem(R.id.menu_delete)
-
-        val spannableString = SpannableString(deleteMenuItem.title)
-        spannableString.setSpan(ForegroundColorSpan(Color.RED), 0, spannableString.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-
-        deleteMenuItem.title = spannableString
-
-        val viatgeId = intent.getStringExtra("viatgeId")
-        val emailCreador = intent.getStringExtra("emailCreador")
-
-        popupMenu.setOnMenuItemClickListener { item ->
-            when (item.itemId) {
-                R.id.menu_edit -> {
-                    val intent = Intent(this, ViatgeEditar::class.java).apply {
-                        putExtra("viatgeInfo", viatgeInfo)
-                    }
-                    Thread.sleep(500)
-                    startActivity(intent)
-                    finish()
-                    true
-                }
-                R.id.menu_filtrar -> {
-                    val intent = Intent(this, FiltrarDespeses::class.java).apply {
-                        putExtra("viatgeId", viatgeId)
-                        putExtra("emailCreador", emailCreador)
-                    }
-                    Thread.sleep(500)
-                    startActivity(intent)
-                    finish()
-                    true
-                }
-                R.id.menu_informe -> {
-                    //
-                    true
-                }
-                R.id.menu_delete -> {
-                    AlertDialog.Builder(this)
-                        .setTitle("Estàs segur de que vols eliminar el viatge?")
-                        .setPositiveButton("Sí") { _, _ ->
-                            CoroutineScope(Dispatchers.IO).launch {
-                                backendManager.deleteViatge(emailCreador, viatgeInfo.viatgeId)
-                            }
-                            Thread.sleep(500)
-                            startActivity(Intent(this@Viatge, Principal::class.java))
-                            finish()
-                        }
-                        .setNegativeButton("No") { dialog, _ ->
-                            dialog.dismiss()
-                        }
-                        .show()
-                    true
-                }
-                else -> false
-            }
-        }
-
-        popupMenu.show()
     }
 
     private fun showDespeses(contentFrame: FrameLayout) {

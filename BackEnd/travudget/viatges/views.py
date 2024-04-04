@@ -92,33 +92,50 @@ def get_or_edit_or_delete_viatge(request, email, id):
         viatge.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-@api_view(['POST'])
-def join_or_eject_viatge(request, email, id):
-    if request.method == 'POST':
+@api_view(['DELETE'])
+def eject_viatge(request, email, id):
+    try:
+        usuari = Usuari.objects.get(email=email)
+        viatge = Viatge.objects.get(id=int(id))
+        viatge.participants.remove(usuari)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    except Viatge.DoesNotExist:
+        return Response({"message": "El viatge no existeix"}, status=status.HTTP_404_NOT_FOUND)
+        
+        
+@api_view(['GET', 'POST'])
+def get_viatges_participant_or_join(request, email):
+    if request.method == 'GET':
+        try:
+            usuari = Usuari.objects.get(email=email)
+            viatges_ids = Viatge.objects.filter(participants=usuari).values_list('id', flat=True)
+            viatges = Viatge.objects.filter(id__in=viatges_ids)
+            serializer = ViatgeSerializer(viatges, many=True)
+            
+            for data in serializer.data:
+                creador_id = data['creador']
+                creador = Usuari.objects.get(id=creador_id)
+                data['creador_email'] = creador.email
+
+            return Response(serializer.data)
+        except Usuari.DoesNotExist:
+            return Response({"message": "L'usuari no existeix"}, status=status.HTTP_404_NOT_FOUND)
+    
+    elif request.method == 'POST':
         codi = request.data.get('codi', None)
         if codi is not None:
             try:
                 usuari = Usuari.objects.get(email=email)
-                viatge = Viatge.objects.get(id=int(id))
+                viatge = Viatge.objects.get(codi=codi)
 
-                if codi == viatge.codi and usuari != viatge.creador:
+                if usuari != viatge.creador:
                     viatge.participants.add(usuari)
                     serializer = ViatgeSerializer(viatge)
                     return Response(serializer.data, status=status.HTTP_201_CREATED)
                 else: 
-                    return Response({"message": "El codi no és correcte"}, status=status.HTTP_400_BAD_REQUEST)
+                    return Response({"message": "El codi no és correcte"}, status=status.HTTP_404_NOT_FOUND)
             except Viatge.DoesNotExist:
                 return Response({"message": "El viatge no existeix"}, status=status.HTTP_404_NOT_FOUND)
         else:
             return Response({"message": "No s'ha inclós el codi"}, status=status.HTTP_400_BAD_REQUEST)
         
-@api_view(['GET'])
-def get_viatges_participant(request, email):
-    try:
-        usuari = Usuari.objects.get(email=email)
-        viatges_ids = Viatge.objects.filter(participants=usuari).values_list('id', flat=True)
-        viatges = Viatge.objects.filter(id__in=viatges_ids)
-        serializer = ViatgeSerializer(viatges)
-        return Response(serializer.data)
-    except Usuari.DoesNotExist:
-        return Response({"message": "L'usuari no existeix"}, status=status.HTTP_404_NOT_FOUND)

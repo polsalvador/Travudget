@@ -18,6 +18,24 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
+
+    val travudget = "travudget"
+    val travudget2 = "travudget2"
+
+    flavorDimensions.add("version")
+
+    productFlavors {
+        create(travudget) {
+            dimension = "version"
+            versionNameSuffix = "-travudget"
+        }
+        create(travudget2) {
+            dimension = "version"
+            applicationId = "com.travudget.auxtravudget"
+            versionNameSuffix = "-travudget2"
+        }
+    }
+
     signingConfigs {
         create("release")    {
             storeFile = file("my_key.jks")

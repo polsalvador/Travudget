@@ -171,9 +171,15 @@ class ViatgeEditar : AppCompatActivity() {
                     CoroutineScope(Dispatchers.IO).launch {
                         backendManager.editViatge(googleEmail, viatgeInfo)
 
+                        val emailCreador = intent.getStringExtra("emailCreador")
                         val intent = Intent(this@ViatgeEditar, Viatge::class.java).apply {
                             putExtra("viatgeId", viatgeInfo.viatgeId)
+                            putExtra("emailCreador", emailCreador)
                         }
+                        Thread.sleep(500)
+                        startActivity(intent)
+                        finish()
+
                         startActivity(intent)
                         finish()
                     }

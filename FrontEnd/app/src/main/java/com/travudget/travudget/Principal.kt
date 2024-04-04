@@ -17,12 +17,19 @@ import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.cardview.widget.CardView
 import android.graphics.Color
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.style.ForegroundColorSpan
 import android.view.LayoutInflater
+import android.view.View
+import android.widget.PopupMenu
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class Principal : AppCompatActivity() {
+    private val backendManager = BackendManager()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.principal)
@@ -38,9 +45,7 @@ class Principal : AppCompatActivity() {
 
         val createViatge = findViewById<ImageButton>(R.id.btn_add_viatge)
         createViatge.setOnClickListener {
-            Thread.sleep(500)
-            startActivity(Intent(this, CrearViatge::class.java))
-            finish()
+            showPopupMenu(createViatge)
         }
 
         navView.setNavigationItemSelectedListener { menuItem ->
@@ -83,7 +88,7 @@ class Principal : AppCompatActivity() {
         CoroutineScope(Dispatchers.IO).launch {
             val sharedPreferences = getSharedPreferences("myPrefs", Context.MODE_PRIVATE)
             val googleEmail = sharedPreferences.getString("googleEmail", "")
-            val viatges: List<ViatgeShowInfo> = BackendManager().getViatges(googleEmail)
+            val viatges: List<ViatgeShowInfo> = backendManager.getViatges(googleEmail) + backendManager.getViatgesParticipant(googleEmail)
 
             val linearLayout = LinearLayout(contentFrame.context)
             linearLayout.orientation = LinearLayout.VERTICAL
@@ -125,5 +130,32 @@ class Principal : AppCompatActivity() {
         textView.setTextColor(Color.BLACK)
 
         return cardView
+    }
+
+    private fun showPopupMenu(view: View) {
+        val popupMenu = PopupMenu(this, view)
+        popupMenu.inflate(R.menu.options_menu_crear)
+
+        val viatgeId = intent.getStringExtra("viatgeId")
+        val emailCreador = intent.getStringExtra("emailCreador")
+
+        popupMenu.setOnMenuItemClickListener { item ->
+            when (item.itemId) {
+                R.id.menu_crear -> {
+                    Thread.sleep(500)
+                    startActivity(Intent(this, CrearViatge::class.java))
+                    finish()
+                    true
+                }
+                R.id.menu_unio -> {
+                    Thread.sleep(500)
+                    startActivity(Intent(this, IntroduirCodi::class.java))
+                    finish()
+                    true
+                }
+                else -> false
+            }
+        }
+        popupMenu.show()
     }
 }

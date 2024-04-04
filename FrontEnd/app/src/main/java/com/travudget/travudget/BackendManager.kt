@@ -79,6 +79,31 @@ class BackendManager {
                                 }
                             }
                         }
+
+                        val deutesString = jsonObject.optString("deutes")
+                        val deutesMap = mutableMapOf<String, Int>()
+
+                        if (deutesString.isNotEmpty()) {
+                            val keyValuePairs = deutesString.replace("{", "").replace("}", "").split(", ")
+                            for (pair in keyValuePairs) {
+                                val keyValue = pair.split("=")
+                                if (keyValue.size == 2) {
+                                    val key = keyValue[0]
+                                    val value = keyValue[1].toIntOrNull()
+                                    if (value != null) {
+                                        deutesMap[key] = value
+                                    }
+                                }
+                            }
+                        }
+
+                        val participantsJsonArray = jsonObject.getJSONArray("participants")
+                        val participantsList = mutableListOf<String>()
+                        for (i in 0 until participantsJsonArray.length()) {
+                            val participantEmail = participantsJsonArray.getString(i)
+                            participantsList.add(participantEmail)
+                        }
+
                         viatge = ViatgeInfo(
                             viatgeId = viatgeId,
                             nomViatge = jsonObject.getString("nomViatge"),
@@ -87,10 +112,10 @@ class BackendManager {
                             divisa = jsonObject.getString("divisa"),
                             pressupostTotal = jsonObject.getInt("pressupostTotal"),
                             pressupostVariable = pressupostVariableMap,
-                            deutes = JSONArray(jsonObject.getString("deutes")).toList(),
+                            deutes = deutesMap,
                             codi = jsonObject.getString("codi"),
                             creadorId = jsonObject.getInt("creador"),
-                            participantsIds = JSONArray(jsonObject.getString("participants")).toList()
+                            participants = participantsList
                         )
                     }
                 } else {
@@ -502,5 +527,69 @@ class BackendManager {
             e.printStackTrace()
         }
         return despesesList
+    }
+
+    suspend fun getViatgesParticipant(email: String?): List<ViatgeShowInfo> {
+        var viatgesList = emptyList<ViatgeShowInfo>()
+        try {
+            val url = "$backendUrl/usuaris/$email/viatges/share"
+            val request = Request.Builder()
+                .url(url)
+                .get()
+                .build()
+            withContext(Dispatchers.IO) {
+                val response = client.newCall(request).execute()
+                if (response.isSuccessful) {
+                    println("getViatgesParticipant: OK")
+                    val responseBody = response.body?.string()
+                    responseBody?.let { json ->
+                        val jsonArray = JSONArray(json)
+                        viatgesList = mutableListOf()
+                        for (i in 0 until jsonArray.length()) {
+                            val jsonObject = jsonArray.getJSONObject(i)
+                            val viatgeId = jsonObject.getInt("id").toString()
+                            val nomViatge = jsonObject.getString("nomViatge")
+                            val emailCreador = jsonObject.getString("creador_email")
+                            val viatgeShowInfo = ViatgeShowInfo(viatgeId, nomViatge, emailCreador)
+                            (viatgesList as MutableList<ViatgeShowInfo>).add(viatgeShowInfo)
+                        }
+                        println("viatgesList: $viatgesList")
+                    }
+                } else {
+                    println("getViatgesParticipant: Failed ${response.code}")
+                }
+            }
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+        println(viatgesList)
+        return viatgesList
+    }
+
+    suspend fun unirViatge(email: String?, codi: String): Boolean {
+        try {
+            val url = "$backendUrl/usuaris/$email/viatges/share"
+            val requestBody = "{\"codi\": \"$codi\"}".toRequestBody(jsonMediaType)
+            val request = Request.Builder()
+                .url(url)
+                .post(requestBody)
+                .build()
+            withContext(Dispatchers.IO) {
+                val response = client.newCall(request).execute()
+                if (response.isSuccessful) {
+                    println("unirViatge: OK")
+                    return@withContext true
+                }
+                else {
+                    println("unirViatge: Failed ${response.code}")
+                    return@withContext false
+                }
+
+            }
+        } catch (e: IOException) {
+            e.printStackTrace()
+            return false
+        }
+        return false
     }
 }
