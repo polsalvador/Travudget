@@ -592,4 +592,25 @@ class BackendManager {
         }
         return false
     }
+
+    suspend fun expulsarViatge(email: String?, viatgeId: String) {
+        try {
+            val url = "$backendUrl/usuaris/$email/viatges/$viatgeId/share"
+            val request = Request.Builder()
+                .url(url)
+                .delete()
+                .build()
+            withContext(Dispatchers.IO) {
+                val response = client.newCall(request).execute()
+                if (response.isSuccessful) {
+                    println("expulsarViatge: OK")
+                }
+                else {
+                    println("expulsarViatge: Failed ${response.code}")
+                }
+            }
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+    }
 }

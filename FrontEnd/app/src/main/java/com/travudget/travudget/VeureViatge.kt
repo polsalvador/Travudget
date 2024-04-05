@@ -1,13 +1,11 @@
 package com.travudget.travudget
 
-import android.app.Activity
-import android.app.DatePickerDialog
+import android.widget.ImageView
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
-import android.widget.Button
-import android.widget.EditText
+import android.view.Gravity
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -132,13 +130,52 @@ class VeureViatge : AppCompatActivity() {
 
             val participantTextView = TextView(this).apply {
                 layoutParams = LinearLayout.LayoutParams(
+                    0,
                     LinearLayout.LayoutParams.WRAP_CONTENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT
+                    1.0f
                 )
+                gravity = Gravity.START
                 text = participant
             }
 
             participantLayout.addView(participantTextView)
+
+            val sharedPreferences = getSharedPreferences("myPrefs", Context.MODE_PRIVATE)
+            val googleEmail = sharedPreferences.getString("googleEmail", "")
+
+            if (emailCreador == googleEmail) {
+                val crossImageView = ImageView(this).apply {
+                    layoutParams = LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.WRAP_CONTENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                    ).apply {
+                        gravity = Gravity.END
+                    }
+                    setImageResource(R.drawable.ic_cross_red)
+                    setOnClickListener {
+                        AlertDialog.Builder(this@VeureViatge)
+                            .setTitle("Estàs segur de que vols expulsar l'usuari?")
+                            .setPositiveButton("Sí") { _, _ ->
+                                CoroutineScope(Dispatchers.IO).launch {
+                                    backendManager.expulsarViatge(participant, viatgeInfo.viatgeId)
+                                }
+                                val intent = Intent(this@VeureViatge, VeureViatge::class.java).apply {
+                                    putExtra("viatgeId", viatgeId)
+                                    putExtra("emailCreador", emailCreador)
+                                    putExtra("viatgeInfo", viatgeInfo)
+                                }
+                                layoutPart.removeView(participantLayout)
+                                Thread.sleep(500)
+                            }
+                            .setNegativeButton("No") { dialog, _ ->
+                                dialog.dismiss()
+                            }
+                            .show()
+                    }
+                }
+                participantLayout.addView(crossImageView)
+            }
+
             layoutPart.addView(participantLayout)
         }
     }
