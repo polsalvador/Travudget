@@ -18,8 +18,7 @@ import org.json.JSONArray
 import org.json.JSONObject
 import java.text.SimpleDateFormat
 import java.util.Locale
-import okhttp3.RequestBody
-import okio.Buffer
+
 class BackendManager {
     private val backendUrl = "http://192.168.1.59:8000"
     private val jsonMediaType = "application/json".toMediaType()
@@ -612,5 +611,114 @@ class BackendManager {
         } catch (e: IOException) {
             e.printStackTrace()
         }
+    }
+
+    suspend fun getRecompensa(email: String?, recompensaId: String?) {
+        try {
+            val url = "$backendUrl/usuaris/$email/recompenses/$recompensaId"
+            val request = Request.Builder()
+                .url(url)
+                .get()
+                .build()
+            println(request)
+            withContext(Dispatchers.IO) {
+                val response = client.newCall(request).execute()
+                if (response.isSuccessful) {
+                    println("getRecompensa: OK")
+
+                } else {
+                    println("getRecompensa: Failed ${response.code} ${response.message}")
+                }
+            }
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+    }
+
+    suspend fun createRecompensa(nomRecompensa: String, preu: Int, codi: String) {
+        try {
+            val requestBody = "{\"nomRecompensa\": \"$nomRecompensa\", \"preu\": \"$preu\", \"codi\": \"$codi\"}".toRequestBody(jsonMediaType)
+            val url = "$backendUrl/recompenses"
+            val request = Request.Builder()
+                .url(url)
+                .post(requestBody)
+                .build()
+
+            withContext(Dispatchers.IO) {
+                val response = client.newCall(request).execute()
+                if (response.isSuccessful) {
+                    println("createRecompensa: OK")
+
+                } else {
+                    println("createRecompensa: Failed ${response.code}")
+                }
+            }
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+    }
+
+    suspend fun getRecompenses(): List<RecompensaInfo> {
+        var recompenses = emptyList<RecompensaInfo>()
+        try {
+            val url = "$backendUrl/recompenses"
+            val request = Request.Builder()
+                .url(url)
+                .get()
+                .build()
+            withContext(Dispatchers.IO) {
+                val response = client.newCall(request).execute()
+                if (response.isSuccessful) {
+                    println("getRecompenses: OK")
+                    val responseBody = response.body?.string()
+                    responseBody?.let { json ->
+                        val jsonArray = JSONArray(json)
+                        recompenses = mutableListOf()
+                        for (i in 0 until jsonArray.length()) {
+                            val jsonObject = jsonArray.getJSONObject(i)
+                            val recompensa = RecompensaInfo(
+                                idRecompensa = jsonObject.getString("id"),
+                                nomRecompensa = jsonObject.getString("nomRecompensa"),
+                                codi = jsonObject.getString("codi"),
+                                preu = jsonObject.getInt("preu")
+                            )
+                            (recompenses as MutableList<RecompensaInfo>).add(recompensa)
+                        }
+                    }
+                } else {
+                    println("getRecompenses: Failed ${response.code}")
+                }
+            }
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+        return recompenses
+    }
+
+    suspend fun getPunts(email: String?): Int {
+        var punts = 10000
+        try {
+            val url = "$backendUrl/usuaris/$email"
+            val request = Request.Builder()
+                .url(url)
+                .get()
+                .build()
+            withContext(Dispatchers.IO) {
+                val response = client.newCall(request).execute()
+                if (response.isSuccessful) {
+                    println("getPunts: OK")
+                    val responseBody = response.body?.string()
+                    responseBody?.let { json ->
+                        val jsonObject = JSONObject(json)
+                        punts = jsonObject.getInt("punts")
+                    }
+                } else {
+                    println("getPunts: Failed ${response.code}")
+                }
+            }
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+        return punts
     }
 }

@@ -4,6 +4,8 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import android.widget.ImageButton
+import android.widget.ImageView
+import android.widget.Button
 import androidx.drawerlayout.widget.DrawerLayout
 import com.google.android.material.navigation.NavigationView
 import androidx.core.view.GravityCompat
@@ -26,35 +28,49 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class Principal : AppCompatActivity() {
+class Recompenses : AppCompatActivity() {
     private val backendManager = BackendManager()
-    private val handler = Handler(Looper.getMainLooper())
+    private var puntsUsuari: Int = 0
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.principal)
+        setContentView(R.layout.recompenses)
 
         val btnMenu = findViewById<ImageButton>(R.id.btn_menu)
         val drawerLayout = findViewById<DrawerLayout>(R.id.drawer_layout)
         val navView = findViewById<NavigationView>(R.id.nav_view)
         val contentFrame = findViewById<FrameLayout>(R.id.content_frame)
+        val puntsText = findViewById<TextView>(R.id.textViewPunts)
+
+        showRecompenses(contentFrame)
 
         btnMenu.setOnClickListener {
             drawerLayout.openDrawer(GravityCompat.START)
         }
 
-        val createViatge = findViewById<ImageButton>(R.id.btn_add_viatge)
-        createViatge.setOnClickListener {
-            showPopupMenu(createViatge)
+        runOnUiThread {
+            CoroutineScope(Dispatchers.IO).launch {
+                val sharedPreferences = getSharedPreferences("myPrefs", Context.MODE_PRIVATE)
+                val googleEmail = sharedPreferences.getString("googleEmail", "")
+
+                Thread.sleep(100)
+                puntsUsuari = backendManager.getPunts(googleEmail)
+                Thread.sleep(100)
+                runOnUiThread {
+                    puntsText.text = puntsUsuari.toString()
+                }
+            }
         }
 
         navView.setNavigationItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.nav_viatges -> {
+                    startActivity(Intent(this, Principal::class.java))
+                    finish()
                     drawerLayout.closeDrawer(GravityCompat.START)
                     true
                 }
                 R.id.nav_recompenses -> {
-                    handler.removeCallbacksAndMessages(null)
                     startActivity(Intent(this, Recompenses::class.java))
                     finish()
                     drawerLayout.closeDrawer(GravityCompat.START)
@@ -72,7 +88,6 @@ class Principal : AppCompatActivity() {
                             editor.clear()
                             editor.apply()
                             Thread.sleep(500)
-                            handler.removeCallbacksAndMessages(null)
                             startActivity(Intent(this, IniciSessio::class.java))
                             finish()
                         }
@@ -88,42 +103,68 @@ class Principal : AppCompatActivity() {
             }
         }
 
-        showViatges(contentFrame)
 
-        handler.postDelayed(object : Runnable {
-            override fun run() {
-                showViatges(contentFrame)
-                handler.postDelayed(this, 2000)
-            }
-        }, 2000)
     }
 
-    private fun showViatges(contentFrame: FrameLayout) {
+    private fun showRecompenses(contentFrame: FrameLayout) {
         CoroutineScope(Dispatchers.IO).launch {
-            val sharedPreferences = getSharedPreferences("myPrefs", Context.MODE_PRIVATE)
-            val googleEmail = sharedPreferences.getString("googleEmail", "")
-            val viatges: List<ViatgeShowInfo> = backendManager.getViatges(googleEmail) + backendManager.getViatgesParticipant(googleEmail)
+            backendManager.createRecompensa("Booking", 1000, "ABCDE")
+            backendManager.createRecompensa("Vueling", 1500, "QWERT")
+            val recompenses: List<RecompensaInfo> = backendManager.getRecompenses()
 
             val linearLayout = LinearLayout(contentFrame.context)
             linearLayout.orientation = LinearLayout.VERTICAL
 
             runOnUiThread {
-                contentFrame.removeAllViews()
+                for (recompensa in recompenses.take(2)) {
+                    val cardView = createCardViewForRecompensa(recompensa)
+                    val button = cardView.findViewById<Button>(R.id.button)
 
-                for (viatge in viatges) {
-                    val cardView = createCardViewForViatge(viatge)
+                    val imageView = cardView.findViewById<ImageView>(R.id.imageView)
+                    val imageView2 = cardView.findViewById<ImageView>(R.id.imageView2)
 
-                    cardView.setOnClickListener {
-                        val intent = Intent(this@Principal, Viatge::class.java).apply {
-                            putExtra("viatgeId", viatge.viatgeId)
-                            putExtra("emailCreador", viatge.emailCreador)
-                        }
-                        Thread.sleep(500)
-                        handler.removeCallbacksAndMessages(null)
-                        startActivity(intent)
-                        finish()
+                    if (recompensa.nomRecompensa == "Booking") {
+                        imageView.visibility = View.VISIBLE
+                        imageView2.visibility = View.INVISIBLE
+                    } else if (recompensa.nomRecompensa == "Vueling") {
+                        imageView.visibility = View.INVISIBLE
+                        imageView2.visibility = View.VISIBLE
                     }
 
+                    button.setOnClickListener {
+                        val punts = recompensa.preu
+                        val alertDialogBuilder = AlertDialog.Builder(this@Recompenses)
+                        alertDialogBuilder.setTitle("Vols bescanviar aquesta recompensa?")
+                        alertDialogBuilder.setMessage("$punts punts")
+
+                        alertDialogBuilder.setPositiveButton("Sí") { _, _ ->
+                            val message = "<b>${recompensa.codi}</b>"
+                            val spannedMessage = Html.fromHtml(message, Html.FROM_HTML_MODE_LEGACY)
+
+                            AlertDialog.Builder(this@Recompenses)
+                                .setTitle("CODI:")
+                                .setMessage(spannedMessage)
+                                .setPositiveButton("OK") { _, _ ->
+                                    CoroutineScope(Dispatchers.IO).launch {
+                                        val sharedPreferences = getSharedPreferences("myPrefs", Context.MODE_PRIVATE)
+                                        val googleEmail = sharedPreferences.getString("googleEmail", "")
+
+                                        backendManager.getRecompensa(googleEmail, recompensa.idRecompensa)
+                                    }
+                                    startActivity(Intent(this@Recompenses, Recompenses::class.java))
+                                    finish()
+                                }
+                                .create()
+                                .show()
+                        }
+
+                        alertDialogBuilder.setNegativeButton("No") { dialog, _ ->
+                            dialog.dismiss()
+                        }
+
+                        val alertDialog = alertDialogBuilder.create()
+                        alertDialog.show()
+                    }
                     val layoutParams = LinearLayout.LayoutParams(
                         LinearLayout.LayoutParams.MATCH_PARENT,
                         LinearLayout.LayoutParams.WRAP_CONTENT
@@ -131,52 +172,23 @@ class Principal : AppCompatActivity() {
                     layoutParams.bottomMargin = 20
                     cardView.layoutParams = layoutParams
                     linearLayout.addView(cardView)
-                }
+                    }
                 contentFrame.addView(linearLayout)
             }
         }
     }
 
-
-    private fun createCardViewForViatge(viatgeShowInfo: ViatgeShowInfo): CardView {
+    private fun createCardViewForRecompensa(recompensaInfo: RecompensaInfo): CardView {
         val inflater = LayoutInflater.from(this)
-        val cardView = inflater.inflate(R.layout.cards_viatges, null) as CardView
+        val cardView = inflater.inflate(R.layout.cards_recompenses, null) as CardView
 
         cardView.setCardBackgroundColor(Color.TRANSPARENT)
 
         val textView = cardView.findViewById<TextView>(R.id.textView)
-        textView.text = viatgeShowInfo.nomViatge
+        textView.text = recompensaInfo.nomRecompensa
         textView.setTextColor(Color.BLACK)
 
+        // val photo =
         return cardView
-    }
-
-    private fun showPopupMenu(view: View) {
-        val popupMenu = PopupMenu(this, view)
-        popupMenu.inflate(R.menu.options_menu_crear)
-
-        val viatgeId = intent.getStringExtra("viatgeId")
-        val emailCreador = intent.getStringExtra("emailCreador")
-
-        popupMenu.setOnMenuItemClickListener { item ->
-            when (item.itemId) {
-                R.id.menu_crear -> {
-                    Thread.sleep(500)
-                    handler.removeCallbacksAndMessages(null)
-                    startActivity(Intent(this, CrearViatge::class.java))
-                    finish()
-                    true
-                }
-                R.id.menu_unio -> {
-                    Thread.sleep(500)
-                    handler.removeCallbacksAndMessages(null)
-                    startActivity(Intent(this, IntroduirCodi::class.java))
-                    finish()
-                    true
-                }
-                else -> false
-            }
-        }
-        popupMenu.show()
     }
 }

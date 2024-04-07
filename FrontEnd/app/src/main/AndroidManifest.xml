@@ -72,5 +72,8 @@
         <activity
             android:name=".VeureViatge">
         </activity>
+        <activity
+            android:name=".Recompenses">
+        </activity>
     </application>
 </manifest>
