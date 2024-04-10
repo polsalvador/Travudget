@@ -3,7 +3,7 @@ package com.travudget.travudget
 import java.util.Date
 import java.io.Serializable
 
-class DespesaShowInfo(
+data class DespesaShowInfo(
     var despesaId: String?,
     var nomDespesa: String,
     var dataInici: Date,

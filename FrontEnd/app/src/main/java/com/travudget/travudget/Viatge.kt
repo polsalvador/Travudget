@@ -27,10 +27,14 @@ import android.widget.ImageView
 import java.util.Date
 import java.text.SimpleDateFormat
 import java.util.Locale
+import java.io.Serializable
 
 class Viatge : AppCompatActivity() {
 
     private lateinit var viatgeInfo: ViatgeInfo
+    private lateinit var despeses: List<DespesaShowInfo>
+    private var despesaTotal: Int = 0
+    private lateinit var despesaPerDia: HashMap<String, Int>
     private val backendManager = BackendManager()
     private val handler = Handler(Looper.getMainLooper())
 
@@ -144,7 +148,6 @@ class Viatge : AppCompatActivity() {
         CoroutineScope(Dispatchers.IO).launch {
             val viatgeId = intent.getStringExtra("viatgeId")
             val emailCreador = intent.getStringExtra("emailCreador")
-            val despeses: List<DespesaShowInfo>
 
             if (intent.hasExtra("preuMinim")) {
                 val preuMinim = intent.getIntExtra("preuMinim", 0)
@@ -160,12 +163,20 @@ class Viatge : AppCompatActivity() {
 
             val despesesPerData = HashMap<Date, MutableList<DespesaShowInfo>>()
 
+            despesaTotal = 0
+            despesaPerDia = HashMap<String, Int>()
+
             for (despesa in despeses) {
                 val data: Date = despesa.dataInici
+
                 if (!despesesPerData.containsKey(data)) {
                     despesesPerData[data] = mutableListOf()
+                    despesaPerDia[data.toString()] = despesa.preu
+                } else {
+                    despesaPerDia[data.toString()] = despesa.preu + (despesaPerDia[data.toString()] ?: 0)
                 }
                 despesesPerData[data]?.add(despesa)
+                despesaTotal += despesa.preu
             }
 
             runOnUiThread {
@@ -270,8 +281,33 @@ class Viatge : AppCompatActivity() {
                     true
                 }
                 R.id.menu_informe -> {
-                    //
-                    true
+                    CoroutineScope(Dispatchers.IO).launch {
+                        despeses = BackendManager().getDespeses(emailCreador, viatgeId)
+
+                        val listDespesesSerializables = ArrayList<Serializable>()
+                        for (despesa in despeses) {
+                            listDespesesSerializables.add(despesa)
+                        }
+
+                        val pressupostVariable = viatgeInfo.pressupostVariable
+                        val pressupostVariableSerializable = HashMap(pressupostVariable)
+
+                        val intent = Intent(this@Viatge, Informes::class.java).apply {
+                            putExtra("viatgeId", viatgeId)
+                            putExtra("emailCreador", emailCreador)
+                            putExtra("despesaTotal", despesaTotal)
+                            putExtra("pressupostTotal", viatgeInfo.pressupostTotal)
+                            putExtra("despeses", listDespesesSerializables)
+                            putExtra("pressupostVariable", pressupostVariableSerializable)
+                            putExtra("despesaPerDia", despesaPerDia)
+
+                        }
+                        Thread.sleep(500)
+                        handler.removeCallbacksAndMessages(null)
+                        startActivity(intent)
+                        finish()
+                    }
+                        true
                 }
                 else -> false
             }

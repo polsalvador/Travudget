@@ -75,5 +75,8 @@
         <activity
             android:name=".Recompenses">
         </activity>
+        <activity
+            android:name=".Informes">
+        </activity>
     </application>
 </manifest>
