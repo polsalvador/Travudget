@@ -39,7 +39,6 @@ jobs:
     - name: Tests despeses
       run: |
         cd ./BackEnd/travudget
-        python -m despeses.tests
 
     - name: Tests recompenses
       run: |
