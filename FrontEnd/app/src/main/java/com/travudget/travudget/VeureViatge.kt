@@ -117,15 +117,22 @@ class VeureViatge : AppCompatActivity() {
         }
 
         val layoutPart = findViewById<LinearLayout>(R.id.layoutParticipants)
-        val participants = viatgeInfo.participants
+
+        val participants = viatgeInfo.participants.toMutableList()
+        if (emailCreador != null) {
+            participants.add(emailCreador)
+        }
 
         for (participant in participants) {
             val participantLayout = LinearLayout(this).apply {
                 layoutParams = LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT
-                )
+                ).apply {
+                    setPadding(0, 0, 0, 16.dpToPx())
+                }
                 orientation = LinearLayout.HORIZONTAL
+                gravity = Gravity.CENTER_VERTICAL
             }
 
             val participantTextView = TextView(this).apply {
@@ -143,7 +150,38 @@ class VeureViatge : AppCompatActivity() {
             val sharedPreferences = getSharedPreferences("myPrefs", Context.MODE_PRIVATE)
             val googleEmail = sharedPreferences.getString("googleEmail", "")
 
-            if (emailCreador == googleEmail) {
+            if (participant != googleEmail) {
+                val payButton = ImageButton(this).apply {
+                    layoutParams = LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.WRAP_CONTENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                    ).apply {
+                        gravity = Gravity.START
+                    }
+                    setImageResource(R.drawable.ic_pay)
+                    setOnClickListener {
+                        val debtKey = "$googleEmail/$participant"
+                        val debtAmount = viatgeInfo.deutes[debtKey] ?: 0
+
+                        val alertDialogBuilder = AlertDialog.Builder(this@VeureViatge)
+                        alertDialogBuilder.setTitle("Vols pagar els deutes de $debtAmount a $participant?")
+                        alertDialogBuilder.setPositiveButton("Sí") { _, _ ->
+                            viatgeInfo.deutes.remove(debtKey)
+                            CoroutineScope(Dispatchers.IO).launch {
+                                backendManager.editViatge(emailCreador, viatgeInfo)
+                            }
+                        }
+                        alertDialogBuilder.setNegativeButton("No") { dialog, _ ->
+                            dialog.dismiss()
+                        }
+                        val alertDialog = alertDialogBuilder.create()
+                        alertDialog.show()
+                    }
+                }
+                participantLayout.addView(payButton)
+            }
+
+            if (emailCreador == googleEmail && emailCreador != participant) {
                 val crossImageView = ImageView(this).apply {
                     layoutParams = LinearLayout.LayoutParams(
                         LinearLayout.LayoutParams.WRAP_CONTENT,
@@ -166,6 +204,9 @@ class VeureViatge : AppCompatActivity() {
                                 }
                                 layoutPart.removeView(participantLayout)
                                 Thread.sleep(500)
+                                startActivity(intent)
+                                finish()
+
                             }
                             .setNegativeButton("No") { dialog, _ ->
                                 dialog.dismiss()
@@ -177,7 +218,22 @@ class VeureViatge : AppCompatActivity() {
             }
 
             layoutPart.addView(participantLayout)
+
+            val separator = View(this).apply {
+                layoutParams = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    1.dpToPx()
+                )
+                setBackgroundColor(Color.parseColor("#CCCCCC"))
+            }
+            layoutPart.addView(separator)
         }
+
+    }
+
+    private fun Int.dpToPx(): Int {
+        val scale: Float = resources.displayMetrics.density
+        return (this * scale + 0.5f).toInt()
     }
 
     private fun calculateDuration(startDate: Date?, endDate: Date?): Int {

@@ -116,9 +116,11 @@ class Viatge : AppCompatActivity() {
         drawerLayout.visibility = View.INVISIBLE
 
         btnAddDespesa.setOnClickListener {
+            val participantsArray = viatgeInfo.participants.toTypedArray()
             val intent = Intent(this@Viatge, CrearDespesa::class.java).apply {
                 putExtra("viatgeId", viatgeId)
                 putExtra("emailCreador", emailCreador)
+                putExtra("participants", participantsArray)
             }
             handler.removeCallbacksAndMessages(null)
             startActivity(intent)

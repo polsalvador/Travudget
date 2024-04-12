@@ -36,7 +36,7 @@ class Informes : AppCompatActivity() {
         btnReturn.setOnClickListener {
             val viatgeId = intent.getStringExtra("viatgeId")
             val emailCreador = intent.getStringExtra("emailCreador")
-            
+
             Thread.sleep(500)
             val intent = Intent(this, Viatge::class.java).apply {
                 putExtra("viatgeId", viatgeId)

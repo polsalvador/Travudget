@@ -147,7 +147,12 @@ class VeureDespesa : AppCompatActivity() {
                             val despesaId = intent.getStringExtra("despesaId")!!
 
                             CoroutineScope(Dispatchers.IO).launch {
-                                backendManager.deleteDespesa(emailCreador, viatgeId, despesaId)
+                                val sharedPreferences = getSharedPreferences("myPrefs", Context.MODE_PRIVATE)
+                                val googleEmail = sharedPreferences.getString("googleEmail", "")
+
+                                if (googleEmail != null) {
+                                    backendManager.deleteDespesa(googleEmail, emailCreador, viatgeId, despesaId)
+                                }
                             }
                             val intent = Intent(this, Viatge::class.java).apply {
                                 putExtra("emailCreador", emailCreador)

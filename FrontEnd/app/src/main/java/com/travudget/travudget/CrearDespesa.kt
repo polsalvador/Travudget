@@ -33,9 +33,11 @@ class CrearDespesa : AppCompatActivity() {
     private lateinit var editTextDataInici: EditText
     private lateinit var editTextDataFi: EditText
     private lateinit var buttonUbicacio: Button
+    private lateinit var buttonDeutors: Button
     private var selectedCategoryId: Int = -1
     private var ubicacio_lat: Double = 0.0
     private var ubicacio_long: Double = 0.0
+    private var deutors: Map<String, Int> = emptyMap()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,6 +49,7 @@ class CrearDespesa : AppCompatActivity() {
         editTextDataFi = findViewById(R.id.editTextDataFi)
         editTextDescripcio = findViewById(R.id.editTextDescripcio)
         buttonUbicacio = findViewById(R.id.buttonUbicacio)
+        buttonDeutors = findViewById(R.id.buttonDeutors)
 
         val txtCancelar = findViewById<TextView>(R.id.txtCancelar)
 
@@ -89,6 +92,16 @@ class CrearDespesa : AppCompatActivity() {
             R.id.imageViewTurisme,
             R.id.imageViewAltres
         )
+
+        buttonDeutors.setOnClickListener {
+            val participantsArray = intent.getStringArrayExtra("participants")
+            val intent = Intent(this@CrearDespesa, Deutes::class.java).apply {
+                putExtra("viatgeId", viatgeId)
+                putExtra("emailCreador", emailCreador)
+                putExtra("participants", participantsArray)
+            }
+            startActivityForResult(intent, 200)
+        }
 
         val colorFilterSelected =
             PorterDuffColorFilter(Color.parseColor("#0000FF"), PorterDuff.Mode.SRC_IN)
@@ -168,10 +181,12 @@ class CrearDespesa : AppCompatActivity() {
                             dataFi = dataFiFormat,
                             ubicacio_lat = ubicacio_lat,
                             ubicacio_long = ubicacio_long,
-                            deutors = mapOf("Placeholder1" to 50, "Placeholder2" to 50)
+                            deutors = deutors.mapValues { (_, value) -> value * editTextPreu.text.toString().toInt() / 100 }
                         )
+                        val sharedPreferences = getSharedPreferences("myPrefs", Context.MODE_PRIVATE)
+                        val googleEmail = sharedPreferences.getString("googleEmail", "")
 
-                        backendManager.createDespesa(despesaInfo)
+                        backendManager.createDespesa(googleEmail, despesaInfo)
 
                         val intent = Intent(this@CrearDespesa, Viatge::class.java).apply {
                             putExtra("viatgeId", viatgeId)
@@ -253,6 +268,13 @@ class CrearDespesa : AppCompatActivity() {
             ubicacio_long = data?.getDoubleExtra("long", 0.0)!!
 
             buttonUbicacio.setText(ubicacio_lat.toString() + " " + ubicacio_long.toString())
+        }
+        if (requestCode == 200 && resultCode == Activity.RESULT_OK) {
+            val data = data?.getSerializableExtra("deutors") as? Map<String, Int>
+            if (data != null) {
+                deutors = data
+            }
+            buttonDeutors.setText("Fet")
         }
     }
 }

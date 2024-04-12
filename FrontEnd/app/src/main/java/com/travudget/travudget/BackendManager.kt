@@ -1,5 +1,6 @@
 package com.travudget.travudget
 
+import android.content.Context
 import kotlin.coroutines.suspendCoroutine
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
@@ -11,7 +12,7 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.IOException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import okhttp3.HttpUrl
+import android.content.SharedPreferences
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import java.net.URLEncoder
 import org.json.JSONArray
@@ -212,7 +213,7 @@ class BackendManager {
             val sdfIniciStr = sdfOutput.format(viatgeInfo.dataInici)
             val sdfFiStr = sdfOutput.format(viatgeInfo.dataFi)
 
-            val requestBody = "{\"nomViatge\": \"${viatgeInfo.nomViatge}\", \"dataInici\": \"${sdfIniciStr}\", \"dataFi\": \"${sdfFiStr}\", \"divisa\": \"${viatgeInfo.divisa}\", \"pressupostTotal\": \"${viatgeInfo.pressupostTotal}\", \"pressupostVariable\": \"${viatgeInfo.pressupostVariable}\"}".toRequestBody(jsonMediaType)
+            val requestBody = "{\"nomViatge\": \"${viatgeInfo.nomViatge}\", \"dataInici\": \"${sdfIniciStr}\", \"dataFi\": \"${sdfFiStr}\", \"divisa\": \"${viatgeInfo.divisa}\", \"pressupostTotal\": \"${viatgeInfo.pressupostTotal}\", \"deutes\": \"${viatgeInfo.deutes}\", \"pressupostVariable\": \"${viatgeInfo.pressupostVariable}\"}".toRequestBody(jsonMediaType)
             val url = "$backendUrl/usuaris/$email/viatges/$viatgeId"
             val request = Request.Builder()
                 .url(url)
@@ -304,11 +305,33 @@ class BackendManager {
         }
     }
 
-    suspend fun createDespesa(despesaInfo: DespesaInfo) {
+    suspend fun createDespesa(googleEmail: String?, despesaInfo: DespesaInfo) {
         try {
             val emailCreador = despesaInfo.emailCreador
-            val requestBody = "{\"nomDespesa\": \"${despesaInfo.nomDespesa}\", \"creador\": \"${emailCreador}\", \"descripcio\": \"${despesaInfo.descripcio}\", \"preu\": \"${despesaInfo.preu}\", \"categoria\": \"${despesaInfo.categoria}\", \"dataInici\": \"${despesaInfo.dataInici}\", \"dataFi\": \"${despesaInfo.dataFi}\", \"ubicacio_lat\": \"${despesaInfo.ubicacio_lat}\", \"ubicacio_long\": \"${despesaInfo.ubicacio_long}\", \"deutors\": \"${despesaInfo.deutors}\"}".toRequestBody(jsonMediaType)
             val idViatge = despesaInfo.viatgeId
+            val viatgeInfo = getViatge(emailCreador, idViatge)
+
+            if (viatgeInfo != null) {
+                val deutors = despesaInfo.deutors
+                if (deutors != null) {
+                    if (deutors.isNotEmpty()) {
+                        val nomDeute = deutors.keys.first()
+                        val clau = "$nomDeute/$googleEmail"
+
+                        if (viatgeInfo.deutes.containsKey(clau)) {
+                            val value = viatgeInfo.deutes.getValue(clau)
+                            val newValue = value + deutors.getValue(nomDeute)
+                            viatgeInfo.deutes[clau] = newValue
+                        } else {
+                            viatgeInfo.deutes[clau] = deutors.getValue(nomDeute)
+                        }
+                        editViatge(emailCreador, viatgeInfo)
+                    }
+                }
+            }
+
+            val requestBody = "{\"nomDespesa\": \"${despesaInfo.nomDespesa}\", \"creador\": \"${emailCreador}\", \"descripcio\": \"${despesaInfo.descripcio}\", \"preu\": \"${despesaInfo.preu}\", \"categoria\": \"${despesaInfo.categoria}\", \"dataInici\": \"${despesaInfo.dataInici}\", \"dataFi\": \"${despesaInfo.dataFi}\", \"ubicacio_lat\": \"${despesaInfo.ubicacio_lat}\", \"ubicacio_long\": \"${despesaInfo.ubicacio_long}\", \"deutors\": \"${despesaInfo.deutors}\"}".toRequestBody(jsonMediaType)
+
             val url = "$backendUrl/usuaris/$emailCreador/viatges/$idViatge/despeses"
             val request = Request.Builder()
                 .url(url)
@@ -366,8 +389,30 @@ class BackendManager {
         }
     }
 
-    suspend fun deleteDespesa(emailCreador: String, viatgeId: String, despesaId: String) {
+    suspend fun deleteDespesa(googleEmail: String, emailCreador: String, viatgeId: String, despesaId: String) {
         try {
+            val viatgeInfo = getViatge(emailCreador, viatgeId)
+            val despesaInfo = getDespesa(emailCreador, viatgeId, despesaId)
+
+            if (viatgeInfo != null) {
+                val deutors = despesaInfo?.deutors
+                if (deutors != null && deutors.isNotEmpty()) {
+                    val nomDeute = deutors.keys.first()
+                    val clau = "$nomDeute/$googleEmail"
+
+                    if (viatgeInfo.deutes.containsKey(clau)) {
+                        val value = viatgeInfo.deutes.getValue(clau)
+                        val newValue = value - deutors.getValue(nomDeute)
+                        if (newValue <= 0) {
+                            viatgeInfo.deutes.remove(clau)
+                        } else {
+                            viatgeInfo.deutes[clau] = newValue
+                        }
+                    }
+                    editViatge(emailCreador, viatgeInfo)
+                }
+            }
+
             val url = "$backendUrl/usuaris/$emailCreador/viatges/$viatgeId/despeses/$despesaId"
             val request = Request.Builder()
                 .url(url)

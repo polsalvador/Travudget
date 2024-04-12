@@ -78,5 +78,8 @@
         <activity
             android:name=".Informes">
         </activity>
+        <activity
+            android:name=".Deutes">
+        </activity>
     </application>
 </manifest>
