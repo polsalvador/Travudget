@@ -1,9 +1,9 @@
 from django.test import TestCase
 from rest_framework.test import APIRequestFactory
 from rest_framework import status
-from .models import Despesa
-from viatges.models import Viatge
 from usuaris.models import Usuari
+from viatges.models import Viatge
+from .models import Despesa
 from .views import create_or_get_despesa, get_or_edit_or_delete_despesa
 import json
 from datetime import date
