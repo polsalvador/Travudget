@@ -7,6 +7,43 @@
   "client": [
     {
       "client_info": {
+        "mobilesdk_app_id": "1:175719393623:android:08331f5ac0a572620e7612",
+        "android_client_info": {
+          "package_name": "com.travudget.auxtravudget"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "175719393623-5okprjtmder4so4skf1mp8orvhnepntp.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.travudget.auxtravudget",
+            "certificate_hash": "bf17d2f109266b70c75bca88b03b58965c543306"
+          }
+        },
+        {
+          "client_id": "175719393623-pvcognqc965hust5r3hph12d6kl4259e.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBZ1vMyB9vu26hT8w_WQEYspQSxB8lPUu4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "175719393623-eq9k93ptcb8niehf76cs7ev900hugbti.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:175719393623:android:2b470c032ad273cb0e7612",
         "android_client_info": {
           "package_name": "com.travudget.travudget"

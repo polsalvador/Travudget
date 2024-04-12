@@ -1,11 +1,8 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:id="@+id/menu_edit"
-        android:title="Editar" />
+        android:id="@+id/menu_filtrar"
+        android:title="Filtrar" />
     <item
         android:id="@+id/menu_informe"
         android:title="Informe" />
-    <item
-        android:id="@+id/menu_delete"
-        android:title="Eliminar" />
 </menu>

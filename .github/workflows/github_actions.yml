@@ -35,3 +35,12 @@ jobs:
       run: |
         cd ./BackEnd/travudget
         python -m viatges.tests
+
+    - name: Tests despeses
+      run: |
+        cd ./BackEnd/travudget
+
+    - name: Tests recompenses
+      run: |
+        cd ./BackEnd/travudget
+        python -m recompenses.tests

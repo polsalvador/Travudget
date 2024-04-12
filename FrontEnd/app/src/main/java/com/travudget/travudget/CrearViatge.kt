@@ -88,6 +88,7 @@ class CrearViatge : AppCompatActivity() {
                         )
                         val intent = Intent(this@CrearViatge, Viatge::class.java).apply {
                             putExtra("viatgeId", viatgeId)
+                            putExtra("emailCreador", googleEmail)
                         }
                         startActivity(intent)
                         finish()

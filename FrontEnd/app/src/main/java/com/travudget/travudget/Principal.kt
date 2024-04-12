@@ -17,12 +17,18 @@ import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.cardview.widget.CardView
 import android.graphics.Color
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
+import android.view.View
+import android.widget.PopupMenu
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class Principal : AppCompatActivity() {
+    private val backendManager = BackendManager()
+    private val handler = Handler(Looper.getMainLooper())
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.principal)
@@ -38,13 +44,19 @@ class Principal : AppCompatActivity() {
 
         val createViatge = findViewById<ImageButton>(R.id.btn_add_viatge)
         createViatge.setOnClickListener {
-            startActivity(Intent(this, CrearViatge::class.java))
-            finish()
+            showPopupMenu(createViatge)
         }
 
         navView.setNavigationItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.nav_viatges -> {
+                    drawerLayout.closeDrawer(GravityCompat.START)
+                    true
+                }
+                R.id.nav_recompenses -> {
+                    handler.removeCallbacksAndMessages(null)
+                    startActivity(Intent(this, Recompenses::class.java))
+                    finish()
                     drawerLayout.closeDrawer(GravityCompat.START)
                     true
                 }
@@ -59,6 +71,8 @@ class Principal : AppCompatActivity() {
                             val editor = sharedPreferences.edit()
                             editor.clear()
                             editor.apply()
+                            Thread.sleep(500)
+                            handler.removeCallbacksAndMessages(null)
                             startActivity(Intent(this, IniciSessio::class.java))
                             finish()
                         }
@@ -75,27 +89,39 @@ class Principal : AppCompatActivity() {
         }
 
         showViatges(contentFrame)
+
+        handler.postDelayed(object : Runnable {
+            override fun run() {
+                showViatges(contentFrame)
+                handler.postDelayed(this, 2000)
+            }
+        }, 2000)
     }
 
     private fun showViatges(contentFrame: FrameLayout) {
         CoroutineScope(Dispatchers.IO).launch {
             val sharedPreferences = getSharedPreferences("myPrefs", Context.MODE_PRIVATE)
             val googleEmail = sharedPreferences.getString("googleEmail", "")
-            val viatges: List<Pair<Int, String>> = BackendManager().getViatges(googleEmail)
-            println("VIATGES: $viatges")
+            val viatges: List<ViatgeShowInfo> = backendManager.getViatges(googleEmail) + backendManager.getViatgesParticipant(googleEmail)
 
             val linearLayout = LinearLayout(contentFrame.context)
             linearLayout.orientation = LinearLayout.VERTICAL
 
             runOnUiThread {
+                contentFrame.removeAllViews()
+
                 for (viatge in viatges) {
                     val cardView = createCardViewForViatge(viatge)
 
                     cardView.setOnClickListener {
                         val intent = Intent(this@Principal, Viatge::class.java).apply {
-                            putExtra("viatgeId", viatge.first)
+                            putExtra("viatgeId", viatge.viatgeId)
+                            putExtra("emailCreador", viatge.emailCreador)
                         }
+                        Thread.sleep(500)
+                        handler.removeCallbacksAndMessages(null)
                         startActivity(intent)
+                        finish()
                     }
 
                     val layoutParams = LinearLayout.LayoutParams(
@@ -112,14 +138,45 @@ class Principal : AppCompatActivity() {
     }
 
 
-    private fun createCardViewForViatge(viatgePair: Pair<Int, String>): CardView {
+    private fun createCardViewForViatge(viatgeShowInfo: ViatgeShowInfo): CardView {
         val inflater = LayoutInflater.from(this)
         val cardView = inflater.inflate(R.layout.cards_viatges, null) as CardView
 
+        cardView.setCardBackgroundColor(Color.TRANSPARENT)
+
         val textView = cardView.findViewById<TextView>(R.id.textView)
-        textView.text = viatgePair.second
+        textView.text = viatgeShowInfo.nomViatge
         textView.setTextColor(Color.BLACK)
 
         return cardView
+    }
+
+    private fun showPopupMenu(view: View) {
+        val popupMenu = PopupMenu(this, view)
+        popupMenu.inflate(R.menu.options_menu_crear)
+
+        val viatgeId = intent.getStringExtra("viatgeId")
+        val emailCreador = intent.getStringExtra("emailCreador")
+
+        popupMenu.setOnMenuItemClickListener { item ->
+            when (item.itemId) {
+                R.id.menu_crear -> {
+                    Thread.sleep(500)
+                    handler.removeCallbacksAndMessages(null)
+                    startActivity(Intent(this, CrearViatge::class.java))
+                    finish()
+                    true
+                }
+                R.id.menu_unio -> {
+                    Thread.sleep(500)
+                    handler.removeCallbacksAndMessages(null)
+                    startActivity(Intent(this, IntroduirCodi::class.java))
+                    finish()
+                    true
+                }
+                else -> false
+            }
+        }
+        popupMenu.show()
     }
 }
