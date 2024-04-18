@@ -79,16 +79,12 @@ class VeureDespesa : AppCompatActivity() {
                 }
                 val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
 
-                val dateInici = sdf.parse(despesaInfo.dataInici)
-                val formattedDataInici = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(dateInici)
                 val textViewDataInici = findViewById<TextView>(R.id.textDataInici)
-                textViewDataInici.text = formattedDataInici
+                textViewDataInici.text = formatDate(despesaInfo.dataInici)
 
                 if (despesaInfo.dataFi != null) {
-                    val dateFi = sdf.parse(despesaInfo.dataFi)
-                    val formattedDataFi = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(dateFi)
                     val textViewDataFi = findViewById<TextView>(R.id.textDataFi)
-                    textViewDataFi.text = formattedDataFi
+                    textViewDataFi.text = formatDate(despesaInfo.dataFi)
                 }
 
                 if (despesaInfo.ubicacio_lat != 0.0) {
@@ -173,5 +169,10 @@ class VeureDespesa : AppCompatActivity() {
         }
 
         popupMenu.show()
+    }
+
+    private fun formatDate(date: Date?): String {
+        val format = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+        return format.format(date)
     }
 }

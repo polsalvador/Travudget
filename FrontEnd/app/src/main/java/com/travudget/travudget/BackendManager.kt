@@ -330,7 +330,10 @@ class BackendManager {
                 }
             }
 
-            val requestBody = "{\"nomDespesa\": \"${despesaInfo.nomDespesa}\", \"creador\": \"${emailCreador}\", \"descripcio\": \"${despesaInfo.descripcio}\", \"preu\": \"${despesaInfo.preu}\", \"categoria\": \"${despesaInfo.categoria}\", \"dataInici\": \"${despesaInfo.dataInici}\", \"dataFi\": \"${despesaInfo.dataFi}\", \"ubicacio_lat\": \"${despesaInfo.ubicacio_lat}\", \"ubicacio_long\": \"${despesaInfo.ubicacio_long}\", \"deutors\": \"${despesaInfo.deutors}\"}".toRequestBody(jsonMediaType)
+            val dataIniciFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(despesaInfo.dataInici)
+            val dataFiFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(despesaInfo.dataFi)
+
+            val requestBody = "{\"nomDespesa\": \"${despesaInfo.nomDespesa}\", \"creador\": \"${emailCreador}\", \"descripcio\": \"${despesaInfo.descripcio}\", \"preu\": \"${despesaInfo.preu}\", \"categoria\": \"${despesaInfo.categoria}\", \"dataInici\": \"${dataIniciFormat}\", \"dataFi\": \"${dataFiFormat}\", \"ubicacio_lat\": \"${despesaInfo.ubicacio_lat}\", \"ubicacio_long\": \"${despesaInfo.ubicacio_long}\", \"deutors\": \"${despesaInfo.deutors}\"}".toRequestBody(jsonMediaType)
 
             val url = "$backendUrl/usuaris/$emailCreador/viatges/$idViatge/despeses"
             val request = Request.Builder()
@@ -358,16 +361,10 @@ class BackendManager {
             val lat = despesaInfo.ubicacio_lat?.toFloat()
             val long = despesaInfo.ubicacio_long?.toFloat()
 
-            val originalFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-            val targetFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+            val dataIniciFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(despesaInfo.dataInici)
+            val dataFiFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(despesaInfo.dataFi)
 
-            val dataIniciDate = originalFormat.parse(despesaInfo.dataInici)
-            val dataFiDate = originalFormat.parse(despesaInfo.dataFi)
-
-            val dataInici = targetFormat.format(dataIniciDate)
-            val dataFi = targetFormat.format(dataFiDate)
-
-            val requestBody = "{\"nomDespesa\": \"${despesaInfo.nomDespesa}\", \"creador\": \"${emailCreador}\", \"descripcio\": \"${despesaInfo.descripcio}\", \"preu\": \"${despesaInfo.preu}\", \"categoria\": \"${despesaInfo.categoria}\", \"dataInici\": \"${dataInici}\", \"dataFi\": \"${dataFi}\", \"ubicacio_lat\": \"${lat}\", \"ubicacio_long\": \"${long}\", \"deutors\": \"${despesaInfo.deutors}\"}".toRequestBody(jsonMediaType)
+            val requestBody = "{\"nomDespesa\": \"${despesaInfo.nomDespesa}\", \"creador\": \"${emailCreador}\", \"descripcio\": \"${despesaInfo.descripcio}\", \"preu\": \"${despesaInfo.preu}\", \"categoria\": \"${despesaInfo.categoria}\", \"dataInici\": \"${dataIniciFormat}\", \"dataFi\": \"${dataFiFormat}\", \"ubicacio_lat\": \"${lat}\", \"ubicacio_long\": \"${long}\", \"deutors\": \"${despesaInfo.deutors}\"}".toRequestBody(jsonMediaType)
             val idViatge = despesaInfo.viatgeId
             val url = "$backendUrl/usuaris/$emailCreador/viatges/$idViatge/despeses/$despesaId"
             val request = Request.Builder()
@@ -435,6 +432,7 @@ class BackendManager {
 
     suspend fun getDespesa(email: String, viatgeId: String, despesaId: String): DespesaInfo? {
         var despesa: DespesaInfo? = null
+
         try {
             val url = "$backendUrl/usuaris/$email/viatges/$viatgeId/despeses/$despesaId"
             val request = Request.Builder()
@@ -468,8 +466,8 @@ class BackendManager {
                             descripcio = jsonObject.optString("descripcio", null),
                             preu = jsonObject.getInt("preu"),
                             categoria = jsonObject.getString("categoria"),
-                            dataInici = jsonObject.getString("dataInici"),
-                            dataFi = if (jsonObject.isNull("dataFi")) null else jsonObject.getString("dataFi"),
+                            dataInici = SimpleDateFormat("yyyy-MM-dd").parse(jsonObject.getString("dataInici")),
+                            dataFi = if (jsonObject.isNull("dataFi")) null else SimpleDateFormat("yyyy-MM-dd").parse(jsonObject.getString("dataFi")),
                             ubicacio_lat = if (jsonObject.isNull("ubicacio_lat")) null else jsonObject.getDouble("ubicacio_lat"),
                             ubicacio_long = if (jsonObject.isNull("ubicacio_long")) null else jsonObject.getDouble("ubicacio_long"),
                             deutors = deutorsMap

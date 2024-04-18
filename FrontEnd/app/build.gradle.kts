@@ -11,7 +11,7 @@ android {
 
     defaultConfig {
         applicationId = "com.travudget.travudget"
-        minSdk = 24
+        minSdk = 19
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -59,6 +59,7 @@ android {
     }
     buildFeatures {
         viewBinding = true
+        buildConfig = true
     }
 
 //    configurations.all {
@@ -89,7 +90,7 @@ dependencies {
 
     implementation ("com.github.kittinunf.fuel:fuel:2.3.1")
 
-    implementation ("com.google.android.gms:play-services-maps:18.1.0")
+    implementation ("com.google.android.gms:play-services-maps:17.0.0")
     implementation ("com.google.android.gms:play-services-location:19.0.1")
 
     implementation ("com.github.PhilJay:MPAndroidChart:v3.1.0")

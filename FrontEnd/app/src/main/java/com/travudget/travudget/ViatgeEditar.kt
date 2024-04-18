@@ -160,11 +160,12 @@ class ViatgeEditar : AppCompatActivity() {
                     }
 
                     val totalPressupostPerDia = calcularTotalPressupostPerDia(layout)
+                    println("totalPressupostPerDia: $totalPressupostPerDia")
 
                     viatgeInfo.nomViatge = editTextNom.text.toString()
                     viatgeInfo.dataInici = sdfInici
                     viatgeInfo.dataFi = sdfFi
-                    viatgeInfo.pressupostTotal = if (pressupost > 0) pressupost else totalPressupostPerDia
+                    viatgeInfo.pressupostTotal = if (totalPressupostPerDia > pressupost) totalPressupostPerDia else pressupost
                     viatgeInfo.divisa = selectedDivisa
                     viatgeInfo.pressupostVariable = pressupostVariableMap
 

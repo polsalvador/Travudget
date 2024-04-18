@@ -269,6 +269,9 @@ class VeureViatge : AppCompatActivity() {
         val viatgeId = intent.getStringExtra("viatgeId")
         val emailCreador = intent.getStringExtra("emailCreador")
 
+        val sharedPreferences = getSharedPreferences("myPrefs", Context.MODE_PRIVATE)
+        val googleEmail = sharedPreferences.getString("googleEmail", "")
+
         popupMenu.setOnMenuItemClickListener { item ->
             when (item.itemId) {
                 R.id.menu_edit -> {
@@ -282,20 +285,25 @@ class VeureViatge : AppCompatActivity() {
                     true
                 }
                 R.id.menu_delete -> {
-                    AlertDialog.Builder(this)
-                        .setTitle("Estàs segur de que vols eliminar el viatge?")
-                        .setPositiveButton("Sí") { _, _ ->
-                            CoroutineScope(Dispatchers.IO).launch {
-                                backendManager.deleteViatge(emailCreador, viatgeInfo.viatgeId)
+                    if (googleEmail == emailCreador) {
+                        AlertDialog.Builder(this)
+                            .setTitle("Estàs segur de que vols eliminar el viatge?")
+                            .setPositiveButton("Sí") { _, _ ->
+                                CoroutineScope(Dispatchers.IO).launch {
+                                    backendManager.deleteViatge(emailCreador, viatgeInfo.viatgeId)
+                                }
+                                Thread.sleep(500)
+                                startActivity(Intent(this, Principal::class.java))
+                                finish()
                             }
-                            Thread.sleep(500)
-                            startActivity(Intent(this, Principal::class.java))
-                            finish()
-                        }
-                        .setNegativeButton("No") { dialog, _ ->
-                            dialog.dismiss()
-                        }
-                        .show()
+                            .setNegativeButton("No") { dialog, _ ->
+                                dialog.dismiss()
+                            }
+                            .show()
+
+                    } else {
+                        Toast.makeText(this, "Has de ser el creador per eliminar un viatge", Toast.LENGTH_SHORT).show()
+                    }
                     true
                 }
                 else -> false

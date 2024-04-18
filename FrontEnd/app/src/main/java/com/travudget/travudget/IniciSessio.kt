@@ -23,7 +23,7 @@ class IniciSessio : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.inici_sessio)
-        val id = "175719393623-pvcognqc965hust5r3hph12d6kl4259e.apps.googleusercontent.com"
+        val id = "124488500493-ehii2bcdg2evdolf9i6uie5kqugoba05.apps.googleusercontent.com"
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(id)
             .requestEmail()
