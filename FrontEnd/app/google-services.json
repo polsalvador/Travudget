@@ -1,89 +1,45 @@
 {
   "project_info": {
-    "project_number": "175719393623",
-    "project_id": "travudget",
-    "storage_bucket": "travudget.appspot.com"
+    "project_number": "459615786233",
+    "project_id": "travudget-6b253",
+    "storage_bucket": "travudget-6b253.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:175719393623:android:08331f5ac0a572620e7612",
+        "mobilesdk_app_id": "1:459615786233:android:66cc7571e3a0f0c6eabe28",
         "android_client_info": {
           "package_name": "com.travudget.auxtravudget"
         }
       },
-      "oauth_client": [
-        {
-          "client_id": "175719393623-5okprjtmder4so4skf1mp8orvhnepntp.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.travudget.auxtravudget",
-            "certificate_hash": "bf17d2f109266b70c75bca88b03b58965c543306"
-          }
-        },
-        {
-          "client_id": "175719393623-pvcognqc965hust5r3hph12d6kl4259e.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
+      "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyBZ1vMyB9vu26hT8w_WQEYspQSxB8lPUu4"
+          "current_key": "AIzaSyDqj5rpQYKbCJN3mY-fb87_wIT_Dvnb878"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "175719393623-eq9k93ptcb8niehf76cs7ev900hugbti.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
+          "other_platform_oauth_client": []
         }
       }
     },
     {
       "client_info": {
-        "mobilesdk_app_id": "1:175719393623:android:2b470c032ad273cb0e7612",
+        "mobilesdk_app_id": "1:459615786233:android:e09dc49bed147790eabe28",
         "android_client_info": {
           "package_name": "com.travudget.travudget"
         }
       },
-      "oauth_client": [
-        {
-          "client_id": "175719393623-2eur3rbqcl5n0hkulcsnb9b8cddubvik.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.travudget.travudget",
-            "certificate_hash": "fb6878d2ff1fac5a864ad53f311ea17bd5c8f019"
-          }
-        },
-        {
-          "client_id": "175719393623-7iglbcq0tvci065pn917il4451oh4tjn.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.travudget.travudget",
-            "certificate_hash": "bf17d2f109266b70c75bca88b03b58965c543306"
-          }
-        },
-        {
-          "client_id": "175719393623-pvcognqc965hust5r3hph12d6kl4259e.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
+      "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyBZ1vMyB9vu26hT8w_WQEYspQSxB8lPUu4"
+          "current_key": "AIzaSyDqj5rpQYKbCJN3mY-fb87_wIT_Dvnb878"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "175719393623-eq9k93ptcb8niehf76cs7ev900hugbti.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
+          "other_platform_oauth_client": []
         }
       }
     }

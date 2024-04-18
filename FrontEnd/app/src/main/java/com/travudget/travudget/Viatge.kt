@@ -52,7 +52,6 @@ class Viatge : AppCompatActivity() {
         val emailCreador = intent.getStringExtra("emailCreador")
 
         btnReturn.setOnClickListener {
-            Thread.sleep(500)
             handler.removeCallbacksAndMessages(null)
             startActivity(Intent(this, Principal::class.java))
             finish()
@@ -181,11 +180,13 @@ class Viatge : AppCompatActivity() {
                 despesaTotal += despesa.preu
             }
 
+            println("despesaPerDia: $despesaPerDia")
+
             runOnUiThread {
                 contentFrame.removeAllViews()
 
                 for ((data, listaDespesas) in despesesPerData) {
-                    val headerView = createHeaderView(data)
+                    val headerView = createHeaderView(data, despesaPerDia)
                     linearLayout.addView(headerView)
 
                     for (despesa in listaDespesas) {
@@ -214,7 +215,7 @@ class Viatge : AppCompatActivity() {
         }
     }
 
-    private fun createHeaderView(data: Date): View {
+    private fun createHeaderView(data: Date, despesesPerDia: HashMap<String, Int>): View {
         val inflater = LayoutInflater.from(this@Viatge)
         val headerView = inflater.inflate(R.layout.header_data_despesa, null)
 
@@ -222,6 +223,15 @@ class Viatge : AppCompatActivity() {
         val dateFormat = SimpleDateFormat("dd/MM", Locale.getDefault())
         val datasdf = dateFormat.format(data)
         textViewFecha.text = datasdf
+
+        val num = despesesPerDia[data.toString()] ?: 0
+        val textDespesa = headerView.findViewById<TextView>(R.id.textDespesa)
+        if (::viatgeInfo.isInitialized) {
+            textDespesa.text = num.toString() + " " + viatgeInfo.divisa
+        } else {
+            Thread.sleep(500)
+            textDespesa.text = num.toString() + " " + viatgeInfo.divisa
+        }
 
         return headerView
     }

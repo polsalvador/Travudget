@@ -75,11 +75,6 @@ class EditarDespesa : AppCompatActivity() {
             startActivityForResult(intent, 101)
         }
 
-        val today = Calendar.getInstance()
-        val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-        editTextDataInici.setText(dateFormat.format(today.time))
-        editTextDataFi.setText(dateFormat.format(today.time))
-
         editTextDataInici.setOnClickListener {
             showDatePickerDialog(editTextDataInici)
         }
@@ -143,17 +138,8 @@ class EditarDespesa : AppCompatActivity() {
                 val dataInici = editTextDataInici.text.toString()
                 val dataFi = editTextDataFi.text.toString()
 
-                val sdfInput = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-                val sdfOutput = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-
-                val dataIniciDate = sdfInput.parse(dataInici)
-                val dataFiDate = sdfInput.parse(dataFi)
-
-                val dataIniciFormat = sdfOutput.format(dataIniciDate)
-                val dataFiFormat = sdfOutput.format(dataFiDate)
-
-                val sdfInici = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).parse(dataIniciFormat)
-                val sdfFi = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).parse(dataFiFormat)
+                val sdfInici = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).parse(dataInici)
+                val sdfFi = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).parse(dataFi)
 
                 if (sdfFi.before(sdfInici)) {
                     Toast.makeText(
@@ -173,8 +159,8 @@ class EditarDespesa : AppCompatActivity() {
                             descripcio = editTextDescripcio.text.toString(),
                             preu = editTextPreu.text.toString().toInt(),
                             categoria = getCategoria(selectedCategoryId),
-                            dataInici = dataIniciFormat,
-                            dataFi = dataFiFormat,
+                            dataInici = sdfInici,
+                            dataFi = sdfFi,
                             ubicacio_lat = ubicacio_lat,
                             ubicacio_long = ubicacio_long,
                             deutors = mapOf("Placeholder1" to 50, "Placeholder2" to 50)
@@ -204,8 +190,9 @@ class EditarDespesa : AppCompatActivity() {
         editTextNom.setText(despesaInfo.nomDespesa)
         editTextPreu.setText(despesaInfo.preu.toString())
         editTextDescripcio.setText(despesaInfo.descripcio)
-        editTextDataInici.setText(despesaInfo.dataInici)
-        editTextDataFi.setText(despesaInfo.dataFi)
+        val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+        editTextDataInici.setText(dateFormat.format(despesaInfo.dataInici))
+        editTextDataFi.setText(dateFormat.format(despesaInfo.dataFi))
         buttonUbicacio.setText(despesaInfo.ubicacio_lat.toString() + " " + despesaInfo.ubicacio_long.toString())
 
         selectedCategoryId = when (despesaInfo.categoria) {

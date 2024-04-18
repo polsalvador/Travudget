@@ -152,13 +152,6 @@ class CrearDespesa : AppCompatActivity() {
                 val sdfInici = SimpleDateFormat("dd/MM/yyyy").parse(dataInici)
                 val sdfFi = SimpleDateFormat("dd/MM/yyyy").parse(dataFi)
 
-                val dataIniciFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(
-                    SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).parse(dataInici)
-                ).toString()
-                val dataFiFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(
-                    SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).parse(dataFi)
-                ).toString()
-
                 if (sdfFi.before(sdfInici)) {
                     Toast.makeText(
                         this,
@@ -177,8 +170,8 @@ class CrearDespesa : AppCompatActivity() {
                             descripcio = editTextDescripcio.text.toString(),
                             preu = editTextPreu.text.toString().toInt(),
                             categoria = getCategoria(selectedCategoryId),
-                            dataInici = dataIniciFormat,
-                            dataFi = dataFiFormat,
+                            dataInici = sdfInici,
+                            dataFi = sdfFi,
                             ubicacio_lat = ubicacio_lat,
                             ubicacio_long = ubicacio_long,
                             deutors = deutors.mapValues { (_, value) -> value * editTextPreu.text.toString().toInt() / 100 }
