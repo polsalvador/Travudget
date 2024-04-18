@@ -84,7 +84,7 @@ DATABASES = {
         'NAME': 'database-1',
         'USER': 'pol',
         'PASSWORD': '12345678',
-        'HOST': '', #db
+        'HOST': 'database-1.chcwqg4m82dj.eu-west-3.rds.amazonaws.com', #db
         'PORT': '3306',
     },
     'test': {
