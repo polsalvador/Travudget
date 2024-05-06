@@ -1,45 +1,118 @@
 {
   "project_info": {
-    "project_number": "459615786233",
-    "project_id": "travudget-6b253",
-    "storage_bucket": "travudget-6b253.appspot.com"
+    "project_number": "124488500493",
+    "project_id": "travudget-420318",
+    "storage_bucket": "travudget-420318.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:459615786233:android:66cc7571e3a0f0c6eabe28",
+        "mobilesdk_app_id": "1:124488500493:android:267df2caf0963dae5c9c44",
         "android_client_info": {
-          "package_name": "com.travudget.auxtravudget"
+          "package_name": "com.travudget.travudget"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "124488500493-ut2q4l4aobld8bdvn5kenpk1kv3756eb.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.travudget.travudget",
+            "certificate_hash": "e24ab062fafaf895504deb100fe08f2ac0bd6fa7"
+          }
+        },
+        {
+          "client_id": "124488500493-ehii2bcdg2evdolf9i6uie5kqugoba05.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
-          "current_key": "AIzaSyDqj5rpQYKbCJN3mY-fb87_wIT_Dvnb878"
+          "current_key": "AIzaSyDZe4GnjsBxZbJeja9d0GwRkFXhufuZmqs"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "124488500493-ehii2bcdg2evdolf9i6uie5kqugoba05.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     },
     {
       "client_info": {
-        "mobilesdk_app_id": "1:459615786233:android:e09dc49bed147790eabe28",
+        "mobilesdk_app_id": "1:124488500493:android:dd560e66a43b23185c9c44",
         "android_client_info": {
-          "package_name": "com.travudget.travudget"
+          "package_name": "com.travudget.travudget2"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "124488500493-g1j0j39o74t5bv305qmuqtn14dk33qd7.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.travudget.travudget2",
+            "certificate_hash": "e24ab062fafaf895504deb100fe08f2ac0bd6fa7"
+          }
+        },
+        {
+          "client_id": "124488500493-ehii2bcdg2evdolf9i6uie5kqugoba05.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
-          "current_key": "AIzaSyDqj5rpQYKbCJN3mY-fb87_wIT_Dvnb878"
+          "current_key": "AIzaSyDZe4GnjsBxZbJeja9d0GwRkFXhufuZmqs"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "124488500493-ehii2bcdg2evdolf9i6uie5kqugoba05.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:124488500493:android:d813271124c7e2a45c9c44",
+        "android_client_info": {
+          "package_name": "com.travudget.travudget3"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "124488500493-i4kmeokd102pv2p1dtcjkf9qdjkr74uk.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.travudget.travudget3",
+            "certificate_hash": "e24ab062fafaf895504deb100fe08f2ac0bd6fa7"
+          }
+        },
+        {
+          "client_id": "124488500493-ehii2bcdg2evdolf9i6uie5kqugoba05.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDZe4GnjsBxZbJeja9d0GwRkFXhufuZmqs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "124488500493-ehii2bcdg2evdolf9i6uie5kqugoba05.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

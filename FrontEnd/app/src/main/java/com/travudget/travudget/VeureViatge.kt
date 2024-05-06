@@ -14,7 +14,7 @@ import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 import android.graphics.Typeface
-import android.text.InputType
+import android.util.Log
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
@@ -161,16 +161,34 @@ class VeureViatge : AppCompatActivity() {
                     setImageResource(R.drawable.ic_pay)
                     setOnClickListener {
                         val debtKey = "$googleEmail/$participant"
-                        val debtAmount = viatgeInfo.deutes[debtKey] ?: 0
 
                         val alertDialogBuilder = AlertDialog.Builder(this@VeureViatge)
-                        alertDialogBuilder.setTitle("Vols pagar els deutes de $debtAmount a $participant?")
-                        alertDialogBuilder.setPositiveButton("Sí") { _, _ ->
-                            viatgeInfo.deutes.remove(debtKey)
-                            CoroutineScope(Dispatchers.IO).launch {
-                                backendManager.editViatge(emailCreador, viatgeInfo)
+                        alertDialogBuilder.setTitle("Vols pagar els deutes a $participant?")
+                        val builder = StringBuilder()
+                        for ((key, value) in viatgeInfo.deutes) {
+                            if (key.startsWith(debtKey)) {
+                                val (_, googleEmail, nomDespesa, preuDespesa) = key.split("/")
+                                builder.append("$nomDespesa $value")
+                                builder.appendLine()
                             }
                         }
+
+                        if (builder.isNotEmpty()) {
+                            alertDialogBuilder.setMessage(builder.toString())
+                            alertDialogBuilder.setPositiveButton("Sí") { _, _ ->
+                                for ((key, _) in viatgeInfo.deutes.toList()) {
+                                    if (key.startsWith(debtKey)) {
+                                        viatgeInfo.deutes.remove(key)
+                                    }
+                                }
+                                CoroutineScope(Dispatchers.IO).launch {
+                                    backendManager.editViatge(emailCreador, viatgeInfo)
+                                }
+                            }
+                        } else {
+                            alertDialogBuilder.setMessage("0")
+                        }
+
                         alertDialogBuilder.setNegativeButton("No") { dialog, _ ->
                             dialog.dismiss()
                         }

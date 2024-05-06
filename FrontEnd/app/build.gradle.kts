@@ -21,6 +21,7 @@ android {
 
     val travudget = "travudget"
     val travudget2 = "travudget2"
+    val travudget3 = "travudget3"
 
     flavorDimensions.add("version")
 
@@ -31,8 +32,13 @@ android {
         }
         create(travudget2) {
             dimension = "version"
-            applicationId = "com.travudget.auxtravudget"
+            applicationId = "com.travudget.travudget2"
             versionNameSuffix = "-travudget2"
+        }
+        create(travudget3) {
+            dimension = "version"
+            applicationId = "com.travudget.travudget3"
+            versionNameSuffix = "-travudget3"
         }
     }
 

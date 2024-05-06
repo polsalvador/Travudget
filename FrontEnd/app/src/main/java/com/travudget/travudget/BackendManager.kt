@@ -21,7 +21,8 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 
 class BackendManager {
-    private val backendUrl = "http://192.168.1.59:8000"
+//    private val backendUrl = "http://192.168.1.59:8000"
+    private val backendUrl= "http://15.188.3.5:8000"
     private val jsonMediaType = "application/json".toMediaType()
     private val client = OkHttpClient()
     private var exchangerate_key = "fce8e4ed89b7fcf440b2d9348923e1af"
@@ -316,7 +317,9 @@ class BackendManager {
                 if (deutors != null) {
                     if (deutors.isNotEmpty()) {
                         val nomDeute = deutors.keys.first()
-                        val clau = "$nomDeute/$googleEmail"
+                        val nomDespesa = despesaInfo.nomDespesa
+                        val preuDespesa = despesaInfo.preu
+                        val clau = "$nomDeute/$googleEmail/$nomDespesa/$preuDespesa"
 
                         if (viatgeInfo.deutes.containsKey(clau)) {
                             val value = viatgeInfo.deutes.getValue(clau)
@@ -333,7 +336,7 @@ class BackendManager {
             val dataIniciFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(despesaInfo.dataInici)
             val dataFiFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(despesaInfo.dataFi)
 
-            val requestBody = "{\"nomDespesa\": \"${despesaInfo.nomDespesa}\", \"creador\": \"${emailCreador}\", \"descripcio\": \"${despesaInfo.descripcio}\", \"preu\": \"${despesaInfo.preu}\", \"categoria\": \"${despesaInfo.categoria}\", \"dataInici\": \"${dataIniciFormat}\", \"dataFi\": \"${dataFiFormat}\", \"ubicacio_lat\": \"${despesaInfo.ubicacio_lat}\", \"ubicacio_long\": \"${despesaInfo.ubicacio_long}\", \"deutors\": \"${despesaInfo.deutors}\"}".toRequestBody(jsonMediaType)
+            val requestBody = "{\"nomDespesa\": \"${despesaInfo.nomDespesa}\", \"creador\": \"${despesaInfo.emailDespesa}\", \"descripcio\": \"${despesaInfo.descripcio}\", \"preu\": \"${despesaInfo.preu}\", \"categoria\": \"${despesaInfo.categoria}\", \"dataInici\": \"${dataIniciFormat}\", \"dataFi\": \"${dataFiFormat}\", \"ubicacio_lat\": \"${despesaInfo.ubicacio_lat}\", \"ubicacio_long\": \"${despesaInfo.ubicacio_long}\", \"deutors\": \"${despesaInfo.deutors}\"}".toRequestBody(jsonMediaType)
 
             val url = "$backendUrl/usuaris/$emailCreador/viatges/$idViatge/despeses"
             val request = Request.Builder()
@@ -395,7 +398,9 @@ class BackendManager {
                 val deutors = despesaInfo?.deutors
                 if (deutors != null && deutors.isNotEmpty()) {
                     val nomDeute = deutors.keys.first()
-                    val clau = "$nomDeute/$googleEmail"
+                    val nomDespesa = despesaInfo.nomDespesa
+                    val preuDespesa = despesaInfo.preu
+                    val clau = "$nomDeute/$googleEmail/$nomDespesa/$preuDespesa"
 
                     if (viatgeInfo.deutes.containsKey(clau)) {
                         val value = viatgeInfo.deutes.getValue(clau)
@@ -463,6 +468,7 @@ class BackendManager {
                             nomDespesa = jsonObject.getString("nomDespesa"),
                             viatgeId = jsonObject.getString("viatge"),
                             emailCreador = jsonObject.getString("creador"),
+                            emailDespesa = jsonObject.getString("creador"),
                             descripcio = jsonObject.optString("descripcio", null),
                             preu = jsonObject.getInt("preu"),
                             categoria = jsonObject.getString("categoria"),
@@ -503,12 +509,27 @@ class BackendManager {
                         despesesList = mutableListOf()
                         for (i in 0 until jsonArray.length()) {
                             val jsonObject = jsonArray.getJSONObject(i)
+
+                            val deutorsString = jsonObject.optString("deutors")
+                            val deutorsMap = mutableMapOf<String, Int>()
+
+                            if (deutorsString.isNotEmpty()) {
+                                val jsonObjectDeutors = JSONObject(deutorsString)
+                                val keys = jsonObjectDeutors.keys()
+
+                                keys.forEach { key ->
+                                    val value = jsonObjectDeutors.getInt(key)
+                                    deutorsMap[key] = value
+                                }
+                            }
+
                             val despesaId = jsonObject.getInt("id").toString()
                             val nomDespesa = jsonObject.getString("nomDespesa")
                             val dataInici = SimpleDateFormat("yyyy-MM-dd").parse(jsonObject.getString("dataInici"))
                             val preu = jsonObject.getInt("preu")
                             val categoria = jsonObject.getString("categoria")
-                            val despesaInfo = DespesaShowInfo(despesaId, nomDespesa, dataInici, preu, categoria)
+                            val creador = jsonObject.getString("creador")
+                            val despesaInfo = DespesaShowInfo(despesaId, nomDespesa, creador, dataInici, preu, categoria, deutorsMap)
                             (despesesList as MutableList<DespesaShowInfo>).add(despesaInfo)
                         }
                         println("despesesList: $despesesList")
@@ -524,7 +545,7 @@ class BackendManager {
         return despesesList
     }
 
-    suspend fun getDespesesFiltrades(emailCreador: String?, idViatge: String?, categories: Array<String>?, preuMinim: Int, preuMaxim: Int): List<DespesaShowInfo> {
+    suspend fun getDespesesFiltrades(emailCreador: String?, idViatge: String?, categories: Array<String>?, creadors: Array<String>?, preuMinim: Int, preuMaxim: Int): List<DespesaShowInfo> {
         var despesesList = emptyList<DespesaShowInfo>()
         try {
             val baseUrl = "$backendUrl/usuaris/$emailCreador/viatges/$idViatge/despeses"
@@ -534,6 +555,9 @@ class BackendManager {
             urlBuilder?.addQueryParameter("preuMaxim", preuMaxim.toString())
             categories?.forEach { category ->
                 urlBuilder?.addQueryParameter("categoria", category)
+            }
+            creadors?.forEach { creador ->
+                urlBuilder?.addQueryParameter("creador", creador)
             }
 
             val url = urlBuilder?.build()
@@ -553,12 +577,27 @@ class BackendManager {
                             despesesList = mutableListOf()
                             for (i in 0 until jsonArray.length()) {
                                 val jsonObject = jsonArray.getJSONObject(i)
+
+                                val deutorsString = jsonObject.optString("deutors")
+                                val deutorsMap = mutableMapOf<String, Int>()
+
+                                if (deutorsString.isNotEmpty()) {
+                                    val jsonObjectDeutors = JSONObject(deutorsString)
+                                    val keys = jsonObjectDeutors.keys()
+
+                                    keys.forEach { key ->
+                                        val value = jsonObjectDeutors.getInt(key)
+                                        deutorsMap[key] = value
+                                    }
+                                }
+
                                 val despesaId = jsonObject.getInt("id").toString()
                                 val nomDespesa = jsonObject.getString("nomDespesa")
                                 val dataInici = SimpleDateFormat("yyyy-MM-dd").parse(jsonObject.getString("dataInici"))
                                 val preu = jsonObject.getInt("preu")
                                 val categoria = jsonObject.getString("categoria")
-                                val despesaInfo = DespesaShowInfo(despesaId, nomDespesa, dataInici, preu, categoria)
+                                val creador = jsonObject.getString("creador")
+                                val despesaInfo = DespesaShowInfo(despesaId, nomDespesa, creador, dataInici, preu, categoria, deutorsMap)
                                 (despesesList as MutableList<DespesaShowInfo>).add(despesaInfo)
                             }
                         }

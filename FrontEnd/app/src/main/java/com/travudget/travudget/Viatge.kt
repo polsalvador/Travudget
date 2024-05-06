@@ -37,6 +37,7 @@ class Viatge : AppCompatActivity() {
     private lateinit var despesaPerDia: HashMap<String, Int>
     private val backendManager = BackendManager()
     private val handler = Handler(Looper.getMainLooper())
+    private var alertDialogShown = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -154,13 +155,42 @@ class Viatge : AppCompatActivity() {
                 val preuMinim = intent.getIntExtra("preuMinim", 0)
                 val preuMaxim = intent.getIntExtra("preuMaxim", 0)
                 val categories: Array<String>? = intent.getStringArrayExtra("categories")
+                val creadors: Array<String>? = intent.getStringArrayExtra("creadors")
 
-                despeses = BackendManager().getDespesesFiltrades(emailCreador, viatgeId, categories, preuMinim, preuMaxim)
+                despeses = BackendManager().getDespesesFiltrades(emailCreador, viatgeId, categories, creadors, preuMinim, preuMaxim)
             } else {
                 despeses = BackendManager().getDespeses(emailCreador, viatgeId)
             }
             val linearLayout = LinearLayout(contentFrame.context)
             linearLayout.orientation = LinearLayout.VERTICAL
+
+            var alertDialogShown = false
+
+            val sharedPreferences = getSharedPreferences("myPrefs", Context.MODE_PRIVATE)
+            val debtMessagesShown = sharedPreferences.getStringSet("debtMessagesShown", HashSet()) ?: HashSet()
+            val googleEmail = sharedPreferences.getString("googleEmail", "")
+
+            println("Viatge: ${viatgeInfo.deutes}")
+            for (despesa in despeses) {
+                val deutors = despesa.deutors
+                if (deutors != null && deutors.isNotEmpty()) {
+                    val nomDeute = deutors.keys.first()
+
+                    if (nomDeute == googleEmail) {
+                        val msg = "${despesa.emailCreador} ha creat la despesa '${despesa.nomDespesa}' i li deus ${deutors[nomDeute]}"
+                        if (!debtMessagesShown.contains(msg)) {
+                            runOnUiThread {
+                                showDebtAlertDialog(msg)
+                            }
+                            debtMessagesShown.add(msg)
+                            val editor = sharedPreferences.edit()
+                            editor.putStringSet("debtMessagesShown", debtMessagesShown)
+                            editor.apply()
+                        }
+                        break
+                    }
+                }
+            }
 
             val despesesPerData = HashMap<Date, MutableList<DespesaShowInfo>>()
 
@@ -215,6 +245,17 @@ class Viatge : AppCompatActivity() {
         }
     }
 
+    private fun showDebtAlertDialog(message: String) {
+        val alertDialogBuilder = AlertDialog.Builder(this)
+        alertDialogBuilder.setTitle("Despesa compartida")
+        alertDialogBuilder.setMessage(message)
+        alertDialogBuilder.setPositiveButton("OK") { dialog, _ ->
+            dialog.dismiss()
+        }
+        val alertDialog = alertDialogBuilder.create()
+        alertDialog.show()
+    }
+
     private fun createHeaderView(data: Date, despesesPerDia: HashMap<String, Int>): View {
         val inflater = LayoutInflater.from(this@Viatge)
         val headerView = inflater.inflate(R.layout.header_data_despesa, null)
@@ -245,6 +286,9 @@ class Viatge : AppCompatActivity() {
 
         val textViewPreu = cardView.findViewById<TextView>(R.id.textPreu)
         textViewPreu.text = despesaShowInfo.preu.toString() + " " + viatgeInfo.divisa
+
+        val textViewCreador = cardView.findViewById<TextView>(R.id.textAutor)
+        textViewCreador.text = despesaShowInfo.emailCreador
 
         val imageViewAllotjament = cardView.findViewById<ImageView>(R.id.imageViewAllotjament)
         val imageViewCompres = cardView.findViewById<ImageView>(R.id.imageViewCompres)
@@ -303,6 +347,8 @@ class Viatge : AppCompatActivity() {
 
                         val pressupostVariable = viatgeInfo.pressupostVariable
                         val pressupostVariableSerializable = HashMap(pressupostVariable)
+                        val deutes = viatgeInfo.deutes
+                        val deutesSerializable = HashMap(deutes)
 
                         val intent = Intent(this@Viatge, Informes::class.java).apply {
                             putExtra("viatgeId", viatgeId)
@@ -312,6 +358,7 @@ class Viatge : AppCompatActivity() {
                             putExtra("despeses", listDespesesSerializables)
                             putExtra("pressupostVariable", pressupostVariableSerializable)
                             putExtra("despesaPerDia", despesaPerDia)
+                            putExtra("deutes", deutesSerializable)
 
                         }
                         Thread.sleep(500)

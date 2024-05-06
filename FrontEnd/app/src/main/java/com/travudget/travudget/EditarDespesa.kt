@@ -53,8 +53,8 @@ class EditarDespesa : AppCompatActivity() {
 
         val txtCancelar = findViewById<TextView>(R.id.txtCancelar)
 
-        val viatgeId = intent.getStringExtra("viatgeId")
-        val emailCreador = intent.getStringExtra("emailCreador")
+        val viatgeId = intent.getStringExtra("viatgeId")!!
+        val emailCreador = intent.getStringExtra("emailCreador")!!
         val despesaId = intent.getStringExtra("despesaId")!!
         val divisa = intent.getStringExtra("divisa")!!
 
@@ -152,10 +152,13 @@ class EditarDespesa : AppCompatActivity() {
                         .show()
                 } else {
                     CoroutineScope(Dispatchers.IO).launch {
+                        despesaInfo = backendManager.getDespesa(emailCreador, viatgeId, despesaId)!!
+
                         val despesaInfo = DespesaInfo(
                             nomDespesa = editTextNom.text.toString(),
                             viatgeId = viatgeId,
                             emailCreador = emailCreador,
+                            emailDespesa = emailCreador,
                             descripcio = editTextDescripcio.text.toString(),
                             preu = editTextPreu.text.toString().toInt(),
                             categoria = getCategoria(selectedCategoryId),
@@ -163,7 +166,7 @@ class EditarDespesa : AppCompatActivity() {
                             dataFi = sdfFi,
                             ubicacio_lat = ubicacio_lat,
                             ubicacio_long = ubicacio_long,
-                            deutors = mapOf("Placeholder1" to 50, "Placeholder2" to 50)
+                            deutors = despesaInfo.deutors
                         )
 
                         backendManager.editDespesa(despesaInfo, despesaId)

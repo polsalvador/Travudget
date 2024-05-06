@@ -65,7 +65,8 @@ def create_or_get_despesa(request, email, id):
             preu_min = request.GET.get('preuMinim', None)
             preu_max = request.GET.get('preuMaxim', None)
             categories = request.GET.getlist('categoria')
-
+            creadors = request.GET.getlist('creador')
+            
             despeses = Despesa.objects.filter(viatge=viatge)
 
             if preu_min is not None:
@@ -76,6 +77,12 @@ def create_or_get_despesa(request, email, id):
                 category_filters = [Q(categoria=category) for category in categories]
                 combined_filter = category_filters.pop() if category_filters else Q()
                 for q in category_filters:
+                    combined_filter |= q
+                despeses = despeses.filter(combined_filter)
+            if creadors:
+                creador_filters = [Q(creador=creador) for creador in creadors]
+                combined_filter = creador_filters.pop() if creador_filters else Q()
+                for q in creador_filters:
                     combined_filter |= q
                 despeses = despeses.filter(combined_filter)
 

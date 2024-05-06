@@ -81,7 +81,7 @@ ASGI_APPLICATION = 'travudget.asgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'database-1',
+        'NAME': 'db',
         'USER': 'pol',
         'PASSWORD': '12345678',
         'HOST': 'database-1.chcwqg4m82dj.eu-west-3.rds.amazonaws.com', #db

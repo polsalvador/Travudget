@@ -31,7 +31,7 @@ class Deutes : AppCompatActivity()  {
 
         val txtCancelar = findViewById<TextView>(R.id.txtCancelar)
         txtCancelar.setOnClickListener {
-            val intent = Intent(this, Viatge::class.java).apply {
+            val intent = Intent(this, CrearDespesa::class.java).apply {
                 putExtra("viatgeId", viatgeId)
                 putExtra("emailCreador", emailCreador)
             }

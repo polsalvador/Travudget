@@ -6,6 +6,7 @@ class DespesaInfo(
     var nomDespesa: String,
     var viatgeId: String?,
     var emailCreador: String?,
+    var emailDespesa: String?,
     var descripcio: String?,
     var preu: Int,
     var categoria: String,

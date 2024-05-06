@@ -111,7 +111,43 @@
             android:gravity="start"
             android:layout_height="40dp"
             android:layout_weight="1"
-            android:text="Selecciona categories"
+            android:text="Filtra per categories"
+            android:textColor="#555555"
+            android:background="#00000000"
+            android:textAllCaps="false" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/layoutCreador"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_below="@id/layoutCategoria"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:gravity="end"
+        android:background="@drawable/border">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Creador"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_marginEnd="8dp" />
+
+        <Button
+            android:id="@+id/buttonCreador"
+            android:layout_width="0dp"
+            android:gravity="start"
+            android:layout_height="40dp"
+            android:layout_weight="1"
+            android:text="Filtra per creador"
             android:textColor="#555555"
             android:background="#00000000"
             android:textAllCaps="false" />

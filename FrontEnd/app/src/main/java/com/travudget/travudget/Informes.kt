@@ -1,12 +1,15 @@
 package com.travudget.travudget
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.widget.TextView
 import android.graphics.Color
 import android.os.Bundle
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.ImageButton
+import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
 import com.github.mikephil.charting.charts.HorizontalBarChart
 import com.github.mikephil.charting.data.BarData
@@ -28,6 +31,7 @@ import java.util.Locale
 
 class Informes : AppCompatActivity() {
 
+    @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.informes)
@@ -184,6 +188,34 @@ class Informes : AppCompatActivity() {
         dataSet3.setValueTextColor(Color.BLACK)
 
         pieChart.invalidate()
+
+        val layoutDeutes = findViewById<LinearLayout>(R.id.layoutDeutes)
+        val deutesSerializable = intent.getSerializableExtra("deutes")
+        val deutes = (deutesSerializable as HashMap<String, Int>).toMutableMap()
+        println("DEUTES: $deutes")
+
+        val llistaDeutes = HashMap<String, Int>()
+
+        for ((clau, valor) in deutes) {
+            val (deutor, rep, _, _) = clau.split("/")
+            val deutorNoEmail = deutor.replace("@gmail.com", "")
+            val repNoEmail = rep.replace("@gmail.com", "")
+            val clauDeute = "$deutorNoEmail -> $repNoEmail"
+
+            if (llistaDeutes.containsKey(clauDeute)) {
+                val deuteExistent = llistaDeutes[clauDeute] ?: 0
+                llistaDeutes[clauDeute] = deuteExistent + valor
+            } else {
+                llistaDeutes[clauDeute] = valor
+            }
+        }
+
+        for ((clau, total) in llistaDeutes) {
+            val textView = TextView(this)
+            textView.text = "$clau $total"
+            layoutDeutes.addView(textView)
+        }
+
     }
 
     private fun formatDate(data: String): String {

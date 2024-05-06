@@ -163,10 +163,14 @@ class CrearDespesa : AppCompatActivity() {
                         .show()
                 } else {
                     CoroutineScope(Dispatchers.IO).launch {
+                        val sharedPreferences = getSharedPreferences("myPrefs", Context.MODE_PRIVATE)
+                        val googleEmail = sharedPreferences.getString("googleEmail", "")
+
                         val despesaInfo = DespesaInfo(
                             nomDespesa = editTextNom.text.toString(),
                             viatgeId = viatgeId,
                             emailCreador = emailCreador,
+                            emailDespesa = googleEmail,
                             descripcio = editTextDescripcio.text.toString(),
                             preu = editTextPreu.text.toString().toInt(),
                             categoria = getCategoria(selectedCategoryId),
@@ -176,8 +180,6 @@ class CrearDespesa : AppCompatActivity() {
                             ubicacio_long = ubicacio_long,
                             deutors = deutors.mapValues { (_, value) -> value * editTextPreu.text.toString().toInt() / 100 }
                         )
-                        val sharedPreferences = getSharedPreferences("myPrefs", Context.MODE_PRIVATE)
-                        val googleEmail = sharedPreferences.getString("googleEmail", "")
 
                         backendManager.createDespesa(googleEmail, despesaInfo)
 

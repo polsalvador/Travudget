@@ -66,7 +66,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="left"
             android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="10dp"
             android:text="Despeses diàries"
             android:textColor="@android:color/black"
             android:textSize="16sp" />
@@ -74,7 +74,7 @@
         <com.github.mikephil.charting.charts.BarChart
             android:id="@+id/chart2"
             android:layout_width="match_parent"
-            android:layout_height="100dp" />
+            android:layout_height="80dp" />
 
         <TextView
             android:id="@+id/textChart3"
@@ -82,7 +82,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="left"
             android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="10dp"
             android:layout_marginBottom="8dp"
             android:text="Despeses per categoria"
             android:textColor="@android:color/black"
@@ -90,8 +90,34 @@
 
         <com.github.mikephil.charting.charts.PieChart
             android:id="@+id/pieChart"
+            android:layout_width="600dp"
+            android:layout_gravity="center"
+            android:layout_height="150dp" />
+
+        <TextView
+            android:id="@+id/textChart4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="8dp"
+            android:text="Deutes"
+            android:textColor="@android:color/black"
+            android:textSize="16sp" />
+
+        <LinearLayout
+            android:id="@+id/layoutDeutes"
             android:layout_width="match_parent"
-            android:layout_height="200dp" />
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="16dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:orientation="vertical"
+            android:layout_marginBottom="16dp"
+            android:gravity="end"
+            android:background="@drawable/border"/>
 
     </LinearLayout>
 

@@ -1,5 +1,6 @@
 package com.travudget.travudget
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import android.app.AlertDialog
@@ -11,11 +12,15 @@ import android.widget.Toast
 
 class FiltrarDespeses : AppCompatActivity() {
     private val categories = arrayOf("Menjar", "Compres", "Turisme", "Allotjament", "Transport", "Altres")
+    private val creadors = arrayOf("pol.salvador@estudiantat.upc.edu", "pol.salvadornogues@gmail.com", "salvadorpol14@gmail.com")
     private var selectedCategories = emptyArray<String>()
     private var selectedItems = BooleanArray(categories.size)
+    private var selectedCreadors = BooleanArray(3)
+    private var selectedCreadorsResult = emptyArray<String>()
     private var preuMinim: Int = 0
     private var preuMaxim: Int = 99999
 
+    @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.filtrar_despeses)
@@ -31,6 +36,11 @@ class FiltrarDespeses : AppCompatActivity() {
             }
             startActivity(intent)
             finish()
+        }
+
+        val buttonCreador = findViewById<Button>(R.id.buttonCreador)
+        buttonCreador.setOnClickListener {
+            showCreadorDialog()
         }
 
         val buttonCategoria = findViewById<Button>(R.id.buttonCategoria)
@@ -52,6 +62,7 @@ class FiltrarDespeses : AppCompatActivity() {
                     putExtra("preuMinim", preuMinim)
                     putExtra("preuMaxim", preuMaxim)
                     putExtra("categories", selectedCategories)
+                    putExtra("creadors", selectedCreadorsResult)
                 }
                 startActivity(intent)
                 finish()
@@ -75,6 +86,28 @@ class FiltrarDespeses : AppCompatActivity() {
                 }
             }
             selectedCategories = tempList.toTypedArray()
+            dialog.dismiss()
+        }
+        builder.setNegativeButton("Cancelar") { dialog, _ ->
+            dialog.dismiss()
+        }
+        builder.show()
+    }
+
+    private fun showCreadorDialog() {
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("Selecciona els creadors")
+        builder.setMultiChoiceItems(creadors, selectedCreadors) { _, which, isChecked ->
+            selectedCreadors[which] = isChecked
+        }
+        builder.setPositiveButton("Acceptar") { dialog, _ ->
+            val tempList = mutableListOf<String>()
+            for (i in creadors.indices) {
+                if (selectedCreadors[i]) {
+                    tempList.add(creadors[i])
+                }
+            }
+            selectedCreadorsResult = tempList.toTypedArray()
             dialog.dismiss()
         }
         builder.setNegativeButton("Cancelar") { dialog, _ ->
