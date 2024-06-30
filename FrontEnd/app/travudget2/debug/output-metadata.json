@@ -1,0 +1,20 @@
+{
+  "version": 3,
+  "artifactType": {
+    "type": "APK",
+    "kind": "Directory"
+  },
+  "applicationId": "com.travudget.auxtravudget",
+  "variantName": "travudget2Debug",
+  "elements": [
+    {
+      "type": "SINGLE",
+      "filters": [],
+      "attributes": [],
+      "versionCode": 1,
+      "versionName": "1.0-travudget2",
+      "outputFile": "app-travudget2-debug.apk"
+    }
+  ],
+  "elementType": "File"
+}

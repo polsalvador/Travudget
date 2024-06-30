@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:cardCornerRadius="8dp"
+    app:cardElevation="4dp"
+    app:cardBackgroundColor="#FFFFFF"
+    android:layout_margin="8dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="16dp">
+
+        <ImageView
+            android:id="@+id/imageViewAllotjament"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/ic_categoria_allotjament"
+            android:padding="8dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:contentDescription="Allotjament"/>
+
+        <ImageView
+            android:id="@+id/imageViewCompres"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/ic_categoria_compres"
+            android:padding="8dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:contentDescription="Compres"/>
+
+        <ImageView
+            android:id="@+id/imageViewMenjar"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/ic_categoria_menjar"
+            android:padding="8dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:contentDescription="Menjar"/>
+        <ImageView
+            android:id="@+id/imageViewTransport"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/ic_categoria_transport"
+            android:padding="8dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:contentDescription="Transport"/>
+
+        <ImageView
+            android:id="@+id/imageViewTurisme"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/ic_categoria_turisme"
+            android:padding="8dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:contentDescription="Turisme"/>
+
+        <ImageView
+            android:id="@+id/imageViewAltres"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/ic_categoria_altres"
+            android:padding="8dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:contentDescription="Altres"/>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginLeft="16dp">
+
+            <TextView
+                android:id="@+id/textPreu"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Preu"
+                android:textSize="18sp"
+                android:textColor="?attr/colorPrimary"
+                android:layout_marginEnd="8dp"/>
+
+            <TextView
+                android:id="@+id/textNomDespesa"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Nom despesa"
+                android:textSize="14sp"
+                android:textColor="@android:color/black"
+                android:layout_marginTop="8dp" />
+
+            <TextView
+                android:id="@+id/textAutor"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Autor"
+                android:textSize="14sp"
+                android:layout_marginTop="8dp"/>
+
+        </LinearLayout>
+
+
+
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>

@@ -1,0 +1,47 @@
+name: Continuous integration of the project.
+
+on:
+  push:
+    branches:
+      - '*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+      with:
+        ref: ${{ github.ref }}
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.9'
+
+    - name: Install requirements
+      run: pip install -r ./BackEnd/requirements.txt
+    
+    - name: Set DJANGO_SETTINGS_MODULE
+      run: echo "DJANGO_SETTINGS_MODULE=travudget.settings" >> $GITHUB_ENV
+      
+    - name: Tests usuaris
+      run: |
+        cd ./BackEnd/travudget
+        python -m usuaris.tests
+
+    - name: Tests viatges
+      run: |
+        cd ./BackEnd/travudget
+        python -m viatges.tests
+
+    - name: Tests despeses
+      run: |
+        cd ./BackEnd/travudget
+        python -m viatges.tests
+
+    - name: Tests recompenses
+      run: |
+        cd ./BackEnd/travudget
+        python -m recompenses.tests
