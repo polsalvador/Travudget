@@ -33,7 +33,6 @@ methodology, design and specification to implementation, testing and conclusion.
 
 ## Contingut repositori
 
-* .github/workflows -> script per Github Actions CI
 * BackEnd -> codi del backend en Django i MySQL
 * Files -> documentació final del projecte (memòria, presentació i demostració)
 * FrontEnd -> codi del frontend en Kotlin
