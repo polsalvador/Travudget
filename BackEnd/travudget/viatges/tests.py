@@ -26,7 +26,7 @@ class ViatgeTestCase(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertTrue(Viatge.objects.filter(nomViatge=nomViatge, creador=usuari).exists())
-    
+
     def test_create_viatge_missing_attribute(self):
         email = "polsalvador@gmail.com"
 

@@ -19,11 +19,11 @@ import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.cardview.widget.CardView
 import android.graphics.Color
-import android.os.Handler
-import android.os.Looper
+import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
-import android.widget.PopupMenu
+import android.view.Gravity
+import androidx.annotation.RequiresApi
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -32,6 +32,7 @@ class Recompenses : AppCompatActivity() {
     private val backendManager = BackendManager()
     private var puntsUsuari: Int = 0
 
+    @RequiresApi(Build.VERSION_CODES.N)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.recompenses)
@@ -46,6 +47,50 @@ class Recompenses : AppCompatActivity() {
 
         btnMenu.setOnClickListener {
             drawerLayout.openDrawer(GravityCompat.START)
+        }
+
+        val layoutCodis = findViewById<LinearLayout>(R.id.layoutCodis)
+
+        runOnUiThread {
+            CoroutineScope(Dispatchers.IO).launch {
+                val sharedPreferences = getSharedPreferences("myPrefs", Context.MODE_PRIVATE)
+                val googleEmail = sharedPreferences.getString("googleEmail", "")
+
+                Thread.sleep(100)
+                var recompensesUsuari: MutableList<String> =
+                    backendManager.getRecompensesUsuari(googleEmail).toMutableList()
+                println("recompensesUsuari: $recompensesUsuari")
+                Thread.sleep(100)
+                runOnUiThread {
+                    puntsText.text = puntsUsuari.toString()
+
+                    recompensesUsuari.forEach { recompensa ->
+                        val participantLayout = LinearLayout(this@Recompenses).apply {
+                            layoutParams = LinearLayout.LayoutParams(
+                                LinearLayout.LayoutParams.MATCH_PARENT,
+                                LinearLayout.LayoutParams.WRAP_CONTENT
+                            ).apply {
+                                setPadding(0, 0, 0, 16.dpToPx())
+                            }
+                            orientation = LinearLayout.HORIZONTAL
+                            gravity = Gravity.CENTER_VERTICAL
+                        }
+
+                        val participantTextView = TextView(this@Recompenses).apply {
+                            layoutParams = LinearLayout.LayoutParams(
+                                0,
+                                LinearLayout.LayoutParams.WRAP_CONTENT,
+                                1.0f
+                            )
+                            gravity = Gravity.START
+                            text = recompensa
+                        }
+
+                        participantLayout.addView(participantTextView)
+                        layoutCodis.addView(participantLayout)
+                    }
+                }
+            }
         }
 
         runOnUiThread {
@@ -106,10 +151,11 @@ class Recompenses : AppCompatActivity() {
 
     }
 
+    @RequiresApi(Build.VERSION_CODES.N)
     private fun showRecompenses(contentFrame: FrameLayout) {
         CoroutineScope(Dispatchers.IO).launch {
-            backendManager.createRecompensa("Booking", 1000, "ABCDE")
-            backendManager.createRecompensa("Vueling", 1500, "QWERT")
+            //backendManager.createRecompensa("Booking", 1000, "primavera10")
+            //backendManager.createRecompensa("Vueling", 1500, "estiu20")
             val recompenses: List<RecompensaInfo> = backendManager.getRecompenses()
 
             val linearLayout = LinearLayout(contentFrame.context)
@@ -188,7 +234,11 @@ class Recompenses : AppCompatActivity() {
         textView.text = recompensaInfo.nomRecompensa
         textView.setTextColor(Color.BLACK)
 
-        // val photo =
         return cardView
+    }
+
+    private fun Int.dpToPx(): Int {
+        val scale: Float = resources.displayMetrics.density
+        return (this * scale + 0.5f).toInt()
     }
 }

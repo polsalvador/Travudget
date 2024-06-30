@@ -81,7 +81,9 @@ class Deutes : AppCompatActivity()  {
         btnGuardar.setOnClickListener {
             val deutors = mutableMapOf<String, Int>()
 
-            var isValid = true
+            var totalPercentage = 0
+            var hasValidParticipant = false
+
             for (i in 0 until layoutPart.childCount) {
                 val view = layoutPart.getChildAt(i)
                 if (view is LinearLayout) {
@@ -89,24 +91,36 @@ class Deutes : AppCompatActivity()  {
                     val participantForm = view.getChildAt(1) as EditText
 
                     val percentText = participantForm.text.toString()
-                    if (percentText.isEmpty() || percentText.toInt() !in 1..100) {
-                        Toast.makeText(this, "Escriu un % del 1 al 100 per a ${participantTextView.text}", Toast.LENGTH_SHORT).show()
-                        isValid = false
-                        break
+
+                    val percent = percentText.toIntOrNull() ?: 0
+
+                    totalPercentage += percent
+
+                    if (percent > 1) {
+                        hasValidParticipant = true
                     }
 
-                    val percent = percentText.toInt()
-                    deutors[participantTextView.text.toString()] = percent
+                    percent?.let {
+                        deutors[participantTextView.text.toString()] = it
+                    }
                 }
             }
 
-            if (isValid) {
+
+            if (hasValidParticipant && totalPercentage <= 100) {
                 val returnIntent = Intent()
                 returnIntent.putExtra("viatgeId", viatgeId)
                 returnIntent.putExtra("emailCreador", emailCreador)
                 returnIntent.putExtra("deutors", deutors as Serializable)
                 setResult(Activity.RESULT_OK, returnIntent)
                 finish()
+            } else {
+                if (!hasValidParticipant) {
+                    Toast.makeText(this, "Almenys un participant ha de tenir un percentatge major a 1.", Toast.LENGTH_SHORT).show()
+                }
+                else {
+                    Toast.makeText(this, "La suma total dels percentatges no pot superar 100.", Toast.LENGTH_SHORT).show()
+                }
             }
         }
     }

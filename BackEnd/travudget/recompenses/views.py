@@ -24,7 +24,6 @@ def get_or_create_recompenses(request):
 
 @api_view(['GET'])
 def get_recompensa(request, email, idRec):
-    print("_________________________")
     usuari = Usuari.objects.get(email=email)
 
     try:
@@ -37,6 +36,7 @@ def get_recompensa(request, email, idRec):
             serializer = RecompensaSerializer(recompensa)
             data = serializer.data
             data['punts_usuari'] = usuari.punts
+            usuari.recompenses.add(recompensa)
             return Response(data)
         else:
             return Response({'error': 'No tens suficients punts'}, status=status.HTTP_400_BAD_REQUEST)

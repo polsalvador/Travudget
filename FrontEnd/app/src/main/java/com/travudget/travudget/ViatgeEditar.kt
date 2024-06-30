@@ -30,7 +30,6 @@ class ViatgeEditar : AppCompatActivity() {
     private lateinit var buttonDivisa: Button
     private lateinit var editTextPressupost: EditText
     private lateinit var selectedDivisa: String
-
     private val backendManager = BackendManager()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -126,7 +125,6 @@ class ViatgeEditar : AppCompatActivity() {
                 val pressupost = editTextPressupost.text.toString().toIntOrNull() ?: 0
 
                 val sharedPreferences = getSharedPreferences("myPrefs", Context.MODE_PRIVATE)
-                val googleEmail = sharedPreferences.getString("googleEmail", "")
 
                 val sdfInput = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
                 val sdfOutput = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
@@ -160,7 +158,6 @@ class ViatgeEditar : AppCompatActivity() {
                     }
 
                     val totalPressupostPerDia = calcularTotalPressupostPerDia(layout)
-                    println("totalPressupostPerDia: $totalPressupostPerDia")
 
                     viatgeInfo.nomViatge = editTextNom.text.toString()
                     viatgeInfo.dataInici = sdfInici
@@ -170,9 +167,10 @@ class ViatgeEditar : AppCompatActivity() {
                     viatgeInfo.pressupostVariable = pressupostVariableMap
 
                     CoroutineScope(Dispatchers.IO).launch {
-                        backendManager.editViatge(googleEmail, viatgeInfo)
-
                         val emailCreador = intent.getStringExtra("emailCreador")
+
+                        backendManager.editViatge(emailCreador, viatgeInfo)
+
                         val intent = Intent(this@ViatgeEditar, Viatge::class.java).apply {
                             putExtra("viatgeId", viatgeInfo.viatgeId)
                             putExtra("emailCreador", emailCreador)

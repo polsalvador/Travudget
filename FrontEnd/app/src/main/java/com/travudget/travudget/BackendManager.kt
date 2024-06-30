@@ -1,6 +1,5 @@
 package com.travudget.travudget
 
-import android.content.Context
 import kotlin.coroutines.suspendCoroutine
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
@@ -12,7 +11,6 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.IOException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import android.content.SharedPreferences
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import java.net.URLEncoder
 import org.json.JSONArray
@@ -21,8 +19,7 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 
 class BackendManager {
-//    private val backendUrl = "http://192.168.1.59:8000"
-    private val backendUrl= "http://15.188.3.5:8000"
+    private val backendUrl= "http://13.39.20.90:8000"
     private val jsonMediaType = "application/json".toMediaType()
     private val client = OkHttpClient()
     private var exchangerate_key = "fce8e4ed89b7fcf440b2d9348923e1af"
@@ -260,6 +257,7 @@ class BackendManager {
         val baseCurrencyParam = "base=EUR"
         val urlString = "$baseUrl?$apiKeyParam&$baseCurrencyParam"
 
+        print("getCurrencies: ")
         return suspendCoroutine { continuation ->
             Fuel.get(urlString)
                 .response { result ->
@@ -316,19 +314,20 @@ class BackendManager {
                 val deutors = despesaInfo.deutors
                 if (deutors != null) {
                     if (deutors.isNotEmpty()) {
-                        val nomDeute = deutors.keys.first()
-                        val nomDespesa = despesaInfo.nomDespesa
-                        val preuDespesa = despesaInfo.preu
-                        val clau = "$nomDeute/$googleEmail/$nomDespesa/$preuDespesa"
+                        for ((nomDeute) in deutors) {
+                            val nomDespesa = despesaInfo.nomDespesa
+                            val preuDespesa = despesaInfo.preu
+                            val clau = "$nomDeute/$googleEmail/$nomDespesa/$preuDespesa"
 
-                        if (viatgeInfo.deutes.containsKey(clau)) {
-                            val value = viatgeInfo.deutes.getValue(clau)
-                            val newValue = value + deutors.getValue(nomDeute)
-                            viatgeInfo.deutes[clau] = newValue
-                        } else {
-                            viatgeInfo.deutes[clau] = deutors.getValue(nomDeute)
+                            if (viatgeInfo.deutes.containsKey(clau)) {
+                                val value = viatgeInfo.deutes.getValue(clau)
+                                val newValue = value + deutors.getValue(nomDeute)
+                                viatgeInfo.deutes[clau] = newValue
+                            } else {
+                                viatgeInfo.deutes[clau] = deutors.getValue(nomDeute)
+                            }
+                            editViatge(emailCreador, viatgeInfo)
                         }
-                        editViatge(emailCreador, viatgeInfo)
                     }
                 }
             }
@@ -358,26 +357,26 @@ class BackendManager {
         }
     }
 
-    suspend fun editDespesa(despesaInfo: DespesaInfo, despesaId: String) {
+    suspend fun editDespesa(despesaInfo: DespesaInfo, emailCreador: String, despesaId: String) {
         try {
-            val emailCreador = despesaInfo.emailCreador
             val lat = despesaInfo.ubicacio_lat?.toFloat()
             val long = despesaInfo.ubicacio_long?.toFloat()
 
             val dataIniciFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(despesaInfo.dataInici)
             val dataFiFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(despesaInfo.dataFi)
 
-            val requestBody = "{\"nomDespesa\": \"${despesaInfo.nomDespesa}\", \"creador\": \"${emailCreador}\", \"descripcio\": \"${despesaInfo.descripcio}\", \"preu\": \"${despesaInfo.preu}\", \"categoria\": \"${despesaInfo.categoria}\", \"dataInici\": \"${dataIniciFormat}\", \"dataFi\": \"${dataFiFormat}\", \"ubicacio_lat\": \"${lat}\", \"ubicacio_long\": \"${long}\", \"deutors\": \"${despesaInfo.deutors}\"}".toRequestBody(jsonMediaType)
+            val requestBody = "{\"nomDespesa\": \"${despesaInfo.nomDespesa}\", \"creador\": \"${despesaInfo.emailDespesa}\", \"descripcio\": \"${despesaInfo.descripcio}\", \"preu\": \"${despesaInfo.preu}\", \"categoria\": \"${despesaInfo.categoria}\", \"dataInici\": \"${dataIniciFormat}\", \"dataFi\": \"${dataFiFormat}\", \"ubicacio_lat\": \"${lat}\", \"ubicacio_long\": \"${long}\", \"deutors\": \"${despesaInfo.deutors}\"}".toRequestBody(jsonMediaType)
             val idViatge = despesaInfo.viatgeId
             val url = "$backendUrl/usuaris/$emailCreador/viatges/$idViatge/despeses/$despesaId"
             val request = Request.Builder()
                 .url(url)
                 .put(requestBody)
                 .build()
-            print(request)
+            println(request)
+            println("-------------------------------------")
             withContext(Dispatchers.IO) {
                 val response = client.newCall(request).execute()
-                print(response)
+                println(response)
                 if (response.isSuccessful) {
                     println("editDespesa: OK")
                 } else {
@@ -397,21 +396,23 @@ class BackendManager {
             if (viatgeInfo != null) {
                 val deutors = despesaInfo?.deutors
                 if (deutors != null && deutors.isNotEmpty()) {
-                    val nomDeute = deutors.keys.first()
-                    val nomDespesa = despesaInfo.nomDespesa
-                    val preuDespesa = despesaInfo.preu
-                    val clau = "$nomDeute/$googleEmail/$nomDespesa/$preuDespesa"
+                    for ((nomDeute) in deutors) {
+                        //val nomDeute = deutors.keys.first()
+                        val nomDespesa = despesaInfo.nomDespesa
+                        val preuDespesa = despesaInfo.preu
+                        val clau = "$nomDeute/$googleEmail/$nomDespesa/$preuDespesa"
 
-                    if (viatgeInfo.deutes.containsKey(clau)) {
-                        val value = viatgeInfo.deutes.getValue(clau)
-                        val newValue = value - deutors.getValue(nomDeute)
-                        if (newValue <= 0) {
-                            viatgeInfo.deutes.remove(clau)
-                        } else {
-                            viatgeInfo.deutes[clau] = newValue
+                        if (viatgeInfo.deutes.containsKey(clau)) {
+                            val value = viatgeInfo.deutes.getValue(clau)
+                            val newValue = value - deutors.getValue(nomDeute)
+                            if (newValue <= 0) {
+                                viatgeInfo.deutes.remove(clau)
+                            } else {
+                                viatgeInfo.deutes[clau] = newValue
+                            }
                         }
+                        editViatge(emailCreador, viatgeInfo)
                     }
-                    editViatge(emailCreador, viatgeInfo)
                 }
             }
 
@@ -655,15 +656,15 @@ class BackendManager {
                 .url(url)
                 .post(requestBody)
                 .build()
-            withContext(Dispatchers.IO) {
+            return withContext(Dispatchers.IO) {
                 val response = client.newCall(request).execute()
                 if (response.isSuccessful) {
                     println("unirViatge: OK")
-                    return@withContext true
+                    true
                 }
                 else {
                     println("unirViatge: Failed ${response.code}")
-                    return@withContext false
+                    false
                 }
 
             }
@@ -674,8 +675,30 @@ class BackendManager {
         return false
     }
 
-    suspend fun expulsarViatge(email: String?, viatgeId: String) {
+    suspend fun expulsarViatge(email: String?, emailCreador: String?, viatgeId: String) {
         try {
+            val viatgeInfo = getViatge(emailCreador, viatgeId)!!
+            val emailEjected = email!!
+            viatgeInfo.deutes = viatgeInfo.deutes.filterKeys { !it.contains(emailEjected) }.toMutableMap()
+            editViatge(emailCreador, viatgeInfo)
+
+            val despeses = getDespeses(emailCreador, viatgeId)
+            for (despesa in despeses) {
+                println("despesa: $despesa")
+                if (emailCreador != null) {
+                    val despesaInfo = getDespesa(emailCreador, viatgeId, despesa.despesaId!!)
+                    if (despesaInfo != null) {
+                        despesaInfo.deutors = despesaInfo.deutors?.filterKeys { !it.contains(emailEjected) }
+                            ?.toMutableMap()
+                        println("despesaInfo: $despesaInfo" )
+                        if (despesaInfo.emailDespesa == email) {
+                            despesaInfo.deutors = mutableMapOf()
+                        }
+                        editDespesa(despesaInfo, emailCreador, despesa.despesaId!!)
+                    }
+
+                }
+            }
             val url = "$backendUrl/usuaris/$email/viatges/$viatgeId/share"
             val request = Request.Builder()
                 .url(url)
@@ -778,7 +801,7 @@ class BackendManager {
     }
 
     suspend fun getPunts(email: String?): Int {
-        var punts = 10000
+        var punts = 0
         try {
             val url = "$backendUrl/usuaris/$email"
             val request = Request.Builder()
@@ -802,5 +825,37 @@ class BackendManager {
             e.printStackTrace()
         }
         return punts
+    }
+
+    suspend fun getRecompensesUsuari(email: String?): List<String> {
+        var recompenses: MutableList<String> = mutableListOf()
+        try {
+            val url = "$backendUrl/usuaris/$email"
+            val request = Request.Builder()
+                .url(url)
+                .get()
+                .build()
+            withContext(Dispatchers.IO) {
+                val response = client.newCall(request).execute()
+                if (response.isSuccessful) {
+                    println("getRecompensesUsuari: OK")
+                    val responseBody = response.body?.string()
+                    responseBody?.let { json ->
+                        val jsonObject = JSONObject(json)
+                        println("jsonObject: $jsonObject")
+                        val recompensesJsonArray = jsonObject.getJSONArray("recompenses_bescanviades")
+                        for (i in 0 until recompensesJsonArray.length()) {
+                            val recompensa = recompensesJsonArray.getString(i)
+                            recompenses.add(recompensa)
+                        }
+                    }
+                } else {
+                    println("getRecompensesUsuari: Failed ${response.code}")
+                }
+            }
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+        return recompenses
     }
 }

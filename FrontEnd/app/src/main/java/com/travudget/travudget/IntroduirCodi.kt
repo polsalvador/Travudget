@@ -37,7 +37,9 @@ class IntroduirCodi : AppCompatActivity()  {
                     finish()
                 } else {
                     Toast.makeText(this@IntroduirCodi, "El codi no pertany a cap viatge", Toast.LENGTH_SHORT).show()
-                    editTextCodi.setText("")
+                    runOnUiThread {
+                        editTextCodi.setText("")
+                    }
                 }
             }
         }

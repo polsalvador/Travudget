@@ -12,7 +12,7 @@ import android.widget.Toast
 
 class FiltrarDespeses : AppCompatActivity() {
     private val categories = arrayOf("Menjar", "Compres", "Turisme", "Allotjament", "Transport", "Altres")
-    private val creadors = arrayOf("pol.salvador@estudiantat.upc.edu", "pol.salvadornogues@gmail.com", "salvadorpol14@gmail.com")
+    private val creadors = arrayOf("travudget@gmail.com", "pol.salvadornogues@gmail.com", "salvadorpol14@gmail.com")
     private var selectedCategories = emptyArray<String>()
     private var selectedItems = BooleanArray(categories.size)
     private var selectedCreadors = BooleanArray(3)

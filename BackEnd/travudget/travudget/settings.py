@@ -78,13 +78,29 @@ ASGI_APPLICATION = 'travudget.asgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
+# AWS EC2 Database when deployed
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': 'db',
+#         'USER': 'pol',
+#         'PASSWORD': '12345678',
+#         'HOST': 'database-1.chcwqg4m82dj.eu-west-3.rds.amazonaws.com',
+#         'PORT': '3306',
+#     },
+#     'test': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'test_db.sqlite3',
+#     }
+# }
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'db',
-        'USER': 'pol',
-        'PASSWORD': '12345678',
-        'HOST': 'database-1.chcwqg4m82dj.eu-west-3.rds.amazonaws.com', #db
+        'NAME': 'mysql',
+        'USER': 'mysql',
+        'PASSWORD': 'mysql',
+        'HOST': 'db',
         'PORT': '3306',
     },
     'test': {
@@ -92,7 +108,6 @@ DATABASES = {
         'NAME': BASE_DIR / 'test_db.sqlite3',
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators

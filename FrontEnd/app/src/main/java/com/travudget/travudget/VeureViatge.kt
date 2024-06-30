@@ -14,12 +14,12 @@ import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 import android.graphics.Typeface
-import android.util.Log
+import android.content.ClipData
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
 import android.view.View
-import android.view.WindowManager
+import android.content.ClipboardManager
 import android.widget.PopupMenu
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
@@ -70,6 +70,14 @@ class VeureViatge : AppCompatActivity() {
         textPressupost.text = viatgeInfo.pressupostTotal.toString()
         textCodi.text = viatgeInfo.codi
 
+        textCodi.setOnClickListener {
+            val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+            val clip = ClipData.newPlainText("codi", viatgeInfo.codi)
+            clipboard.setPrimaryClip(clip)
+
+            Toast.makeText(this, "Codi copiat", Toast.LENGTH_SHORT).show()
+        }
+
         val duration = calculateDuration(viatgeInfo.dataInici, viatgeInfo.dataFi)
         val layout = findViewById<LinearLayout>(R.id.layoutPressupostPerDia)
 
@@ -101,7 +109,7 @@ class VeureViatge : AppCompatActivity() {
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT
                 ).apply {
-                    marginStart = (8 * resources.displayMetrics.density).toInt() // Establece el margen de inicio en 8dp
+                    marginStart = (8 * resources.displayMetrics.density).toInt()
                 }
                 val dateStr = formatDate(addDays(viatgeInfo.dataInici, i - 1))
                 if (pressupostVariableMap.containsKey(dateStr)) {
@@ -213,7 +221,7 @@ class VeureViatge : AppCompatActivity() {
                             .setTitle("Estàs segur de que vols expulsar l'usuari?")
                             .setPositiveButton("Sí") { _, _ ->
                                 CoroutineScope(Dispatchers.IO).launch {
-                                    backendManager.expulsarViatge(participant, viatgeInfo.viatgeId)
+                                    backendManager.expulsarViatge(participant, emailCreador, viatgeInfo.viatgeId)
                                 }
                                 val intent = Intent(this@VeureViatge, VeureViatge::class.java).apply {
                                     putExtra("viatgeId", viatgeId)

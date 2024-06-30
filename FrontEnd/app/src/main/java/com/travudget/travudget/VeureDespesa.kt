@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
+import android.view.Gravity
 import android.view.View
 import android.widget.ImageButton
 import android.widget.ImageView
@@ -19,6 +20,7 @@ import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 import android.widget.PopupMenu
+import android.widget.LinearLayout
 
 class VeureDespesa : AppCompatActivity() {
     private lateinit var despesaInfo: DespesaInfo
@@ -77,7 +79,6 @@ class VeureDespesa : AppCompatActivity() {
                     "Turisme" -> imageViewTurisme.visibility = View.VISIBLE
                     "Altres" -> imageViewAltres.visibility = View.VISIBLE
                 }
-                val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
 
                 val textViewDataInici = findViewById<TextView>(R.id.textDataInici)
                 textViewDataInici.text = formatDate(despesaInfo.dataInici)
@@ -98,6 +99,18 @@ class VeureDespesa : AppCompatActivity() {
                 val textViewPreu = findViewById<TextView>(R.id.textPreu)
                 textViewPreu.text = despesaInfo.preu.toString() + " " + divisa
 
+                val layoutDeutes = findViewById<LinearLayout>(R.id.layoutDeutes)
+                val deutes = despesaInfo.deutors?.toMutableMap()
+
+                if (deutes != null) {
+                    for ((clau, total) in deutes) {
+                        val textView = TextView(this@VeureDespesa)
+                        val clau2 = clau.replace("@gmail.com", "")
+                        textView.text = "$clau2 $total"
+                        textView.gravity = Gravity.CENTER_HORIZONTAL
+                        layoutDeutes.addView(textView)
+                    }
+                }
             }
         }
         window.decorView.visibility = View.VISIBLE
@@ -167,7 +180,6 @@ class VeureDespesa : AppCompatActivity() {
                 else -> false
             }
         }
-
         popupMenu.show()
     }
 

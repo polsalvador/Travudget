@@ -155,9 +155,6 @@ class Principal : AppCompatActivity() {
         val popupMenu = PopupMenu(this, view)
         popupMenu.inflate(R.menu.options_menu_crear)
 
-        val viatgeId = intent.getStringExtra("viatgeId")
-        val emailCreador = intent.getStringExtra("emailCreador")
-
         popupMenu.setOnMenuItemClickListener { item ->
             when (item.itemId) {
                 R.id.menu_crear -> {

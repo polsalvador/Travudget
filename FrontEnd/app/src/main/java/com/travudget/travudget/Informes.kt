@@ -4,19 +4,17 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.widget.TextView
 import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
 import android.view.Gravity
-import android.view.LayoutInflater
-import android.view.View
 import android.widget.ImageButton
 import android.widget.LinearLayout
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import com.github.mikephil.charting.charts.HorizontalBarChart
 import com.github.mikephil.charting.data.BarData
 import com.github.mikephil.charting.data.BarDataSet
 import com.github.mikephil.charting.data.BarEntry
-import java.util.Date
-import java.util.Calendar
 import com.github.mikephil.charting.charts.BarChart
 import java.io.Serializable
 import com.github.mikephil.charting.charts.PieChart
@@ -31,6 +29,7 @@ import java.util.Locale
 
 class Informes : AppCompatActivity() {
 
+    @RequiresApi(Build.VERSION_CODES.N)
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -97,18 +96,12 @@ class Informes : AppCompatActivity() {
         val despesaPerDiaSerializable = intent.getSerializableExtra("despesaPerDia")
         val despesaPerDiaNotFormat = (despesaPerDiaSerializable as HashMap<String, Int>).toMutableMap()
 
-        val despesaPerDia = despesaPerDiaNotFormat.mapKeys { (key, _) ->
-            formatDate(key)
-        }.toMutableMap()
-
         val despesaPerDiaSorted = despesaPerDiaNotFormat
             .mapKeys { formatDate(it.key) }
             .toSortedMap(compareBy { it })
 
         val entries2 = ArrayList<BarEntry>()
         despesaPerDiaSorted.forEach { (day, expense) ->
-            val budget = pressupostVariable[day] ?: 0
-            val color = if (expense < budget) Color.GREEN else Color.RED
             entries2.add(BarEntry(entries2.size.toFloat(), expense.toFloat(), day))
         }
 
@@ -117,7 +110,7 @@ class Informes : AppCompatActivity() {
 
         val colors = entries2.map { entry ->
             val budget = pressupostVariable[entry.data as String] ?: 0
-            if (entry.y < budget) Color.GREEN else Color.RED
+            if (entry.y < budget || budget == 0) Color.GREEN else Color.RED
         }.toIntArray()
         dataSet2.colors = colors.toList()
 
@@ -192,30 +185,41 @@ class Informes : AppCompatActivity() {
         val layoutDeutes = findViewById<LinearLayout>(R.id.layoutDeutes)
         val deutesSerializable = intent.getSerializableExtra("deutes")
         val deutes = (deutesSerializable as HashMap<String, Int>).toMutableMap()
-        println("DEUTES: $deutes")
 
-        val llistaDeutes = HashMap<String, Int>()
+        if (deutes != null && deutes.isNotEmpty()) {
+            val llistaDeutes = HashMap<String, Int>()
 
-        for ((clau, valor) in deutes) {
-            val (deutor, rep, _, _) = clau.split("/")
-            val deutorNoEmail = deutor.replace("@gmail.com", "")
-            val repNoEmail = rep.replace("@gmail.com", "")
-            val clauDeute = "$deutorNoEmail -> $repNoEmail"
+            for ((clau, valor) in deutes) {
+                val (deutor, rep, _, _) = clau.split("/")
+                val deutorNoEmail = deutor.replace("@gmail.com", "")
+                val repNoEmail = rep.replace("@gmail.com", "")
+                val clauDeute = "$deutorNoEmail -> $repNoEmail"
+                val clauReverse = "$repNoEmail -> $deutorNoEmail"
 
-            if (llistaDeutes.containsKey(clauDeute)) {
-                val deuteExistent = llistaDeutes[clauDeute] ?: 0
-                llistaDeutes[clauDeute] = deuteExistent + valor
-            } else {
-                llistaDeutes[clauDeute] = valor
+                if (llistaDeutes.containsKey(clauReverse)) {
+                    val reverseValue = llistaDeutes[clauReverse]!!
+                    val netValue = reverseValue - valor
+
+                    if (netValue > 0) {
+                        llistaDeutes[clauReverse] = netValue
+                    } else if (netValue < 0) {
+                        llistaDeutes.remove(clauReverse)
+                        llistaDeutes[clauDeute] = -netValue
+                    } else {
+                        llistaDeutes.remove(clauReverse)
+                    }
+                } else {
+                    llistaDeutes[clauDeute] = llistaDeutes.getOrDefault(clauDeute, 0) + valor
+                }
+            }
+
+            for ((clau, total) in llistaDeutes) {
+                val textView = TextView(this)
+                textView.text = "$clau $total"
+                textView.gravity = Gravity.CENTER_HORIZONTAL
+                layoutDeutes.addView(textView)
             }
         }
-
-        for ((clau, total) in llistaDeutes) {
-            val textView = TextView(this)
-            textView.text = "$clau $total"
-            layoutDeutes.addView(textView)
-        }
-
     }
 
     private fun formatDate(data: String): String {

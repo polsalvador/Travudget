@@ -135,7 +135,19 @@
 
             </LinearLayout>
 
-            <LinearLayout
+        <LinearLayout
+            android:id="@+id/layoutDeutes"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="16dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:orientation="vertical"
+            android:layout_marginBottom="16dp"
+            android:gravity="center" />
+
+        <LinearLayout
                 android:id="@+id/layoutNom"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -165,7 +177,7 @@
                 android:orientation="horizontal"
                 android:layout_below="@id/layoutBarraSuperior"
                 android:layout_marginStart="16dp"
-                android:layout_marginTop="100dp"
+                android:layout_marginTop="70dp"
                 android:layout_marginEnd="16dp"
                 android:layout_marginBottom="16dp"
                 android:gravity="start">

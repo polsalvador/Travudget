@@ -157,8 +157,8 @@ class EditarDespesa : AppCompatActivity() {
                         val despesaInfo = DespesaInfo(
                             nomDespesa = editTextNom.text.toString(),
                             viatgeId = viatgeId,
-                            emailCreador = emailCreador,
-                            emailDespesa = emailCreador,
+                            emailCreador = despesaInfo.emailCreador,
+                            emailDespesa = despesaInfo.emailDespesa,
                             descripcio = editTextDescripcio.text.toString(),
                             preu = editTextPreu.text.toString().toInt(),
                             categoria = getCategoria(selectedCategoryId),
@@ -169,7 +169,7 @@ class EditarDespesa : AppCompatActivity() {
                             deutors = despesaInfo.deutors
                         )
 
-                        backendManager.editDespesa(despesaInfo, despesaId)
+                        backendManager.editDespesa(despesaInfo, emailCreador, despesaId)
 
                         val intent = Intent(this@EditarDespesa, Viatge::class.java).apply {
                             putExtra("viatgeId", viatgeId)

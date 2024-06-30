@@ -12,6 +12,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import android.content.Context
+import kotlinx.coroutines.GlobalScope
 
 class IniciSessio : AppCompatActivity() {
     private val backendManager = BackendManager()
@@ -53,6 +54,15 @@ class IniciSessio : AppCompatActivity() {
 
                 CoroutineScope(Dispatchers.IO).launch {
                     backendManager.sendLogin(googleName, googleEmail)
+
+                    GlobalScope.launch {
+                        val response = backendManager.getCurrencies()
+                        val sharedPreferences = getSharedPreferences("myPrefs", Context.MODE_PRIVATE)
+                        val editor = sharedPreferences.edit()
+                        editor.putString("currencies", response)
+                        editor.apply()
+                    }
+
                     startActivity(Intent(this@IniciSessio, Principal::class.java))
                     finish()
                 }

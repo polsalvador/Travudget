@@ -5,10 +5,21 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .models import Viatge
+from despeses.models import Despesa
 from usuaris.models import Usuari
 from .serializers import ViatgeSerializer
+from datetime import datetime
 import random
 import string
+
+def award_points(viatge):
+    if viatge.dataFi < datetime.now().date():
+        trip_length = (viatge.dataFi - viatge.dataInici).days
+        usuaris = [viatge.creador] + list(viatge.participants.all())
+
+        for usuario in usuaris:
+            usuario.punts += 100 * trip_length
+            usuario.save()
 
 @api_view(['POST', 'GET'])
 def create_or_get_viatge(request, email):
@@ -92,6 +103,8 @@ def get_or_edit_or_delete_viatge(request, email, id):
             return Response({"message": "L'usuari no existeix"}, status=status.HTTP_404_NOT_FOUND)
         except Viatge.DoesNotExist:
             return Response({"message": "El viatge no existeix o no pertany a l'usuari"}, status=status.HTTP_404_NOT_FOUND)
+        
+        award_points(viatge)
         viatge.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
@@ -141,4 +154,3 @@ def get_viatges_participant_or_join(request, email):
                 return Response({"message": "El viatge no existeix"}, status=status.HTTP_404_NOT_FOUND)
         else:
             return Response({"message": "No s'ha inclós el codi"}, status=status.HTTP_400_BAD_REQUEST)
-        

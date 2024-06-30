@@ -37,7 +37,6 @@ class Viatge : AppCompatActivity() {
     private lateinit var despesaPerDia: HashMap<String, Int>
     private val backendManager = BackendManager()
     private val handler = Handler(Looper.getMainLooper())
-    private var alertDialogShown = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -170,24 +169,26 @@ class Viatge : AppCompatActivity() {
             val debtMessagesShown = sharedPreferences.getStringSet("debtMessagesShown", HashSet()) ?: HashSet()
             val googleEmail = sharedPreferences.getString("googleEmail", "")
 
+            Thread.sleep(500)
             println("Viatge: ${viatgeInfo.deutes}")
             for (despesa in despeses) {
                 val deutors = despesa.deutors
                 if (deutors != null && deutors.isNotEmpty()) {
-                    val nomDeute = deutors.keys.first()
-
-                    if (nomDeute == googleEmail) {
-                        val msg = "${despesa.emailCreador} ha creat la despesa '${despesa.nomDespesa}' i li deus ${deutors[nomDeute]}"
-                        if (!debtMessagesShown.contains(msg)) {
-                            runOnUiThread {
-                                showDebtAlertDialog(msg)
+                    for ((nomDeute) in deutors) {
+                        if (nomDeute == googleEmail) {
+                            val msg =
+                                "${despesa.emailCreador} ha creat la despesa '${despesa.nomDespesa}' i li deus ${deutors[nomDeute]}"
+                            if (!debtMessagesShown.contains(msg)) {
+                                runOnUiThread {
+                                    showDebtAlertDialog(msg)
+                                }
+                                debtMessagesShown.add(msg)
+                                val editor = sharedPreferences.edit()
+                                editor.putStringSet("debtMessagesShown", debtMessagesShown)
+                                editor.apply()
                             }
-                            debtMessagesShown.add(msg)
-                            val editor = sharedPreferences.edit()
-                            editor.putStringSet("debtMessagesShown", debtMessagesShown)
-                            editor.apply()
+                            break
                         }
-                        break
                     }
                 }
             }
@@ -195,7 +196,7 @@ class Viatge : AppCompatActivity() {
             val despesesPerData = HashMap<Date, MutableList<DespesaShowInfo>>()
 
             despesaTotal = 0
-            despesaPerDia = HashMap<String, Int>()
+            despesaPerDia = HashMap()
 
             for (despesa in despeses) {
                 val data: Date = despesa.dataInici
@@ -209,8 +210,6 @@ class Viatge : AppCompatActivity() {
                 despesesPerData[data]?.add(despesa)
                 despesaTotal += despesa.preu
             }
-
-            println("despesaPerDia: $despesaPerDia")
 
             runOnUiThread {
                 contentFrame.removeAllViews()
@@ -371,7 +370,6 @@ class Viatge : AppCompatActivity() {
                 else -> false
             }
         }
-
         popupMenu.show()
     }
 }
