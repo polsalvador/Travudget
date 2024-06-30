@@ -37,3 +37,8 @@ methodology, design and specification to implementation, testing and conclusion.
 * BackEnd -> codi del backend en Django i MySQL
 * Files -> documentació final del projecte (memòria, presentació i demostració)
 * FrontEnd -> codi del frontend en Kotlin
+
+## Demo
+
+https://github.com/polsalvador/Travudget/assets/125583346/f5812518-8793-4c43-9cc4-a56c2c2270c8
+
